@@ -1,0 +1,43 @@
+<div class="app-shell" [class.menu-open]="menuOpen()">
+  <aside class="sidebar">
+    <a class="brand" routerLink="/marcas" (click)="closeMenu()">
+      <img src="logo-aurafit.png" alt="Logo AuraFit" />
+      <span>AuraFit <small>Administração</small></span>
+    </a>
+
+    <nav aria-label="Cadastros administrativos">
+      <span class="nav-label">Cadastros</span>
+      <a routerLink="/marcas" routerLinkActive="active" (click)="closeMenu()">
+        <img src="icons/package-plus.svg" alt="" />
+        Marcas
+      </a>
+      <a routerLink="/categorias" routerLinkActive="active" (click)="closeMenu()">
+        <img src="icons/tags.svg" alt="" />
+        Categorias
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <span class="status-dot"></span>
+      Sistema conectado
+    </div>
+  </aside>
+
+  <button class="backdrop" aria-label="Fechar menu" (click)="closeMenu()"></button>
+
+  <div class="shell-content">
+    <header class="topbar">
+      <button class="icon-button menu-button" type="button" aria-label="Abrir menu" (click)="menuOpen.set(!menuOpen())">
+        <img [src]="menuOpen() ? 'icons/x.svg' : 'icons/menu.svg'" alt="" />
+      </button>
+      <div>
+        <strong>Gestão de catálogo</strong>
+        <span>Área administrativa</span>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

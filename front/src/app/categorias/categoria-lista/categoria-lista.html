@@ -1,0 +1,48 @@
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Catálogo</p>
+    <h1>Categorias</h1>
+    <p class="page-description">Organize os produtos por finalidade e tipo de suplemento.</p>
+  </div>
+  <a class="btn btn-primary" routerLink="/categorias/novo"><img src="icons/plus.svg" alt="" />Nova categoria</a>
+</section>
+
+@if (error()) {
+  <div class="alert error"><img src="icons/triangle-alert.svg" alt="" />{{ error() }}</div>
+}
+
+<section class="toolbar">
+  <div class="search-box">
+    <img src="icons/search.svg" alt="" />
+    <input #searchInput type="search" placeholder="Buscar categoria pelo nome" (keyup.enter)="load(searchInput.value)" />
+    <button class="btn btn-secondary" type="button" (click)="load(searchInput.value)">Buscar</button>
+  </div>
+  <span class="result-count">{{ items().length }} registro(s)</span>
+</section>
+
+<section class="data-panel">
+  @if (loading()) {
+    <div class="loading-state">Carregando categorias...</div>
+  } @else if (items().length === 0) {
+    <div class="empty-state">Nenhuma categoria encontrada.</div>
+  } @else {
+    <table>
+      <thead><tr><th>Nome</th><th>Descrição</th><th>Situação</th><th aria-label="Ações"></th></tr></thead>
+      <tbody>
+        @for (item of items(); track item.id) {
+          <tr>
+            <td class="entity-name">{{ item.nome }}</td>
+            <td>{{ item.descricao || 'Sem descrição' }}</td>
+            <td><span class="badge" [class.active]="item.ativo" [class.inactive]="!item.ativo">{{ item.ativo ? 'Ativa' : 'Inativa' }}</span></td>
+            <td>
+              <div class="actions">
+                <a class="icon-button" [routerLink]="['/categorias/editar', item.id]" title="Editar categoria"><img src="icons/pencil.svg" alt="Editar" /></a>
+                <button class="icon-button danger" type="button" title="Excluir categoria" (click)="remove(item)"><img src="icons/trash-2.svg" alt="Excluir" /></button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</section>

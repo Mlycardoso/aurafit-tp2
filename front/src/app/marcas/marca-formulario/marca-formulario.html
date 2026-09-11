@@ -1,0 +1,46 @@
+<a class="back-link" routerLink="/marcas"><img src="icons/arrow-left.svg" alt="" />Voltar para marcas</a>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Marcas</p>
+    <h1>{{ id ? 'Editar marca' : 'Nova marca' }}</h1>
+    <p class="page-description">Informe os dados usados para identificar a marca no catálogo.</p>
+  </div>
+</section>
+
+@if (error()) {
+  <div class="alert error"><img src="icons/triangle-alert.svg" alt="" />{{ error() }}</div>
+}
+
+<section class="form-panel">
+  @if (loading()) {
+    <div class="loading-state">Carregando marca...</div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-grid">
+        <div class="field">
+          <label for="nome">Nome da marca</label>
+          <input id="nome" formControlName="nome" maxlength="80" placeholder="Ex.: Max Titanium" />
+          @if (form.controls.nome.touched && form.controls.nome.invalid) {
+            <small class="field-error">Informe um nome entre 2 e 80 caracteres.</small>
+          }
+        </div>
+        <div class="field">
+          <label for="descricao">Descrição</label>
+          <textarea id="descricao" formControlName="descricao" maxlength="255" placeholder="Breve descrição da marca"></textarea>
+          <small>{{ form.controls.descricao.value.length }}/255 caracteres</small>
+        </div>
+        <div class="checkbox-field">
+          <input id="ativo" type="checkbox" formControlName="ativo" />
+          <label for="ativo">Marca ativa no catálogo</label>
+        </div>
+      </div>
+      <div class="form-actions">
+        <a class="btn btn-secondary" routerLink="/marcas">Cancelar</a>
+        <button class="btn btn-primary" type="submit" [disabled]="saving()">
+          <img src="icons/save.svg" alt="" />{{ saving() ? 'Salvando...' : 'Salvar marca' }}
+        </button>
+      </div>
+    </form>
+  }
+</section>
