@@ -1,6 +1,8 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { EMPTY, Subject, catchError, switchMap, timer } from 'rxjs';
 
 import { getApiError } from '../../shared/api-error';
 import { Produto } from '../produto.model';
@@ -14,6 +16,7 @@ import { ProdutoService } from '../produto.service';
 export class ProdutoLista {
   private readonly service = inject(ProdutoService);
   private readonly pageSize = 5;
+  private readonly requests = new Subject<{ nome: string; page: number; delay: number }>();
 
   protected readonly items = signal<Produto[]>([]);
   protected readonly loading = signal(true);
@@ -24,27 +27,36 @@ export class ProdutoLista {
   protected readonly totalPages = signal(0);
 
   constructor() {
+    this.requests.pipe(
+      switchMap(({ nome, page, delay }) => timer(delay).pipe(
+        switchMap(() => this.service.findAll(nome, page, this.pageSize)),
+        catchError((error) => {
+          this.error.set(getApiError(error));
+          this.loading.set(false);
+          return EMPTY;
+        }),
+      )),
+      takeUntilDestroyed(),
+    ).subscribe((response) => {
+      this.items.set(response.items);
+      this.page.set(response.page);
+      this.totalItems.set(response.totalItems);
+      this.totalPages.set(response.totalPages);
+      this.loading.set(false);
+    });
     this.load();
   }
 
-  protected load(nome = this.search(), page = 0): void {
+  protected onSearch(nome: string): void {
+    this.load(nome, 0, 300);
+  }
+
+  protected load(nome = this.search(), page = 0, delay = 0): void {
     const filtro = nome.trim();
     this.loading.set(true);
     this.error.set('');
-    this.search.set(filtro);
-    this.service.findAll(filtro, page, this.pageSize).subscribe({
-      next: (response) => {
-        this.items.set(response.items);
-        this.page.set(response.page);
-        this.totalItems.set(response.totalItems);
-        this.totalPages.set(response.totalPages);
-        this.loading.set(false);
-      },
-      error: (error) => {
-        this.error.set(getApiError(error));
-        this.loading.set(false);
-      },
-    });
+    this.search.set(nome);
+    this.requests.next({ nome: filtro, page, delay });
   }
 
   protected previousPage(): void {

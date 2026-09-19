@@ -14,7 +14,7 @@
 <section class="toolbar">
   <div class="search-box">
     <img src="icons/search.svg" alt="" />
-    <input #searchInput type="search" [value]="search()" placeholder="Buscar produto pelo nome" (keyup.enter)="load(searchInput.value)" />
+    <input #searchInput type="search" [value]="search()" aria-label="Buscar produto pelo nome" placeholder="Buscar produto pelo nome" (input)="onSearch(searchInput.value)" (keyup.enter)="load(searchInput.value)" />
     <button class="btn btn-secondary" type="button" (click)="load(searchInput.value)">Buscar</button>
   </div>
   <span class="result-count">{{ totalItems() }} registro(s)</span>
