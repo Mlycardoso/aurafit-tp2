@@ -1,0 +1,58 @@
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Catálogo</p>
+    <h1>Produtos</h1>
+    <p class="page-description">Gerencie os produtos e suas respectivas categorias.</p>
+  </div>
+  <a class="btn btn-primary" routerLink="/produtos/novo"><img src="icons/plus.svg" alt="" />Novo produto</a>
+</section>
+
+@if (error()) {
+  <div class="alert error"><img src="icons/triangle-alert.svg" alt="" />{{ error() }}</div>
+}
+
+<section class="toolbar">
+  <div class="search-box">
+    <img src="icons/search.svg" alt="" />
+    <input #searchInput type="search" [value]="search()" placeholder="Buscar produto pelo nome" (keyup.enter)="load(searchInput.value)" />
+    <button class="btn btn-secondary" type="button" (click)="load(searchInput.value)">Buscar</button>
+  </div>
+  <span class="result-count">{{ totalItems() }} registro(s)</span>
+</section>
+
+<section class="data-panel">
+  @if (loading()) {
+    <div class="loading-state">Carregando produtos...</div>
+  } @else if (items().length === 0) {
+    <div class="empty-state">Nenhum produto encontrado.</div>
+  } @else {
+    <table class="product-table">
+      <thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Situação</th><th aria-label="Ações"></th></tr></thead>
+      <tbody>
+        @for (item of items(); track item.id) {
+          <tr>
+            <td class="entity-name">{{ item.nome }}</td>
+            <td>{{ item.categoria.nome }}</td>
+            <td>{{ item.preco | currency: 'BRL' }}</td>
+            <td>{{ item.estoque }} un.</td>
+            <td><span class="badge" [class.active]="item.ativo" [class.inactive]="!item.ativo">{{ item.ativo ? 'Ativo' : 'Inativo' }}</span></td>
+            <td>
+              <div class="actions">
+                <a class="icon-button" [routerLink]="['/produtos/editar', item.id]" title="Editar produto"><img src="icons/pencil.svg" alt="Editar" /></a>
+                <button class="icon-button danger" type="button" title="Excluir produto" (click)="remove(item)"><img src="icons/trash-2.svg" alt="Excluir" /></button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</section>
+
+@if (!loading() && totalPages() > 0) {
+  <nav class="pagination" aria-label="Paginação de produtos">
+    <button class="btn btn-secondary" type="button" [disabled]="page() === 0" (click)="previousPage()">Anterior</button>
+    <span>Página <strong>{{ page() + 1 }}</strong> de <strong>{{ totalPages() }}</strong></span>
+    <button class="btn btn-secondary" type="button" [disabled]="page() + 1 >= totalPages()" (click)="nextPage()">Próxima</button>
+  </nav>
+}

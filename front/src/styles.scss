@@ -16,6 +16,7 @@ body {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
 }
@@ -167,6 +168,7 @@ h1 {
 }
 
 input:focus,
+select:focus,
 textarea:focus {
   border-color: #20a9b8 !important;
   box-shadow: 0 0 0 3px rgba(32, 169, 184, 0.12);
@@ -309,6 +311,14 @@ tbody tr:hover {
   gap: 22px;
 }
 
+.form-grid.two-columns {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.full-field {
+  grid-column: 1 / -1;
+}
+
 .field label {
   color: #333a46;
   display: block;
@@ -318,6 +328,7 @@ tbody tr:hover {
 }
 
 .field input,
+.field select,
 .field textarea {
   border: 1px solid #d5dae2;
   border-radius: 6px;
@@ -325,6 +336,11 @@ tbody tr:hover {
   padding: 11px 12px;
   resize: vertical;
   width: 100%;
+}
+
+.field select {
+  background: #fff;
+  min-height: 42px;
 }
 
 .field textarea {
@@ -367,6 +383,19 @@ tbody tr:hover {
   justify-content: flex-end;
   margin-top: 26px;
   padding-top: 20px;
+}
+
+.pagination {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  justify-content: flex-end;
+  padding-top: 18px;
+}
+
+.pagination span {
+  color: #687181;
+  font-size: 13px;
 }
 
 @media (max-width: 640px) {
@@ -442,8 +471,48 @@ tbody tr:hover {
     grid-row: 1 / 4;
   }
 
+  .product-table tbody td:nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .product-table tbody td:nth-child(2) {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .product-table tbody td:nth-child(3) {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .product-table tbody td:nth-child(4) {
+    align-self: auto;
+    grid-column: 1;
+    grid-row: 4;
+  }
+
+  .product-table tbody td:nth-child(5) {
+    grid-column: 1;
+    grid-row: 5;
+  }
+
+  .product-table tbody td:nth-child(6) {
+    align-self: center;
+    grid-column: 2;
+    grid-row: 1 / 6;
+  }
+
   .form-panel {
     padding: 20px;
+  }
+
+  .form-grid.two-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .full-field {
+    grid-column: 1;
   }
 
   .form-actions {
@@ -452,5 +521,15 @@ tbody tr:hover {
 
   .form-actions .btn {
     width: 100%;
+  }
+
+  .pagination {
+    justify-content: space-between;
+  }
+
+  .pagination .btn {
+    min-width: 86px;
+    padding-left: 10px;
+    padding-right: 10px;
   }
 }

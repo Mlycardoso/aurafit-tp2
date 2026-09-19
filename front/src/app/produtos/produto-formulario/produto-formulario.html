@@ -1,0 +1,72 @@
+<a class="back-link" routerLink="/produtos"><img src="icons/arrow-left.svg" alt="" />Voltar para produtos</a>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Produtos</p>
+    <h1>{{ id ? 'Editar produto' : 'Novo produto' }}</h1>
+    <p class="page-description">Cadastre as informações comerciais e vincule o produto a uma categoria.</p>
+  </div>
+</section>
+
+@if (error()) {
+  <div class="alert error"><img src="icons/triangle-alert.svg" alt="" />{{ error() }}</div>
+}
+
+<section class="form-panel">
+  @if (loading()) {
+    <div class="loading-state">Carregando produto...</div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-grid two-columns">
+        <div class="field full-field">
+          <label for="nome">Nome do produto</label>
+          <input id="nome" formControlName="nome" maxlength="80" placeholder="Ex.: Whey Protein 3W 900g" />
+          @if (form.controls.nome.touched && form.controls.nome.invalid) {
+            <small class="field-error">Informe um nome entre 2 e 80 caracteres.</small>
+          }
+        </div>
+        <div class="field">
+          <label for="categoria">Categoria</label>
+          <select id="categoria" formControlName="idCategoria">
+            <option [ngValue]="0" disabled>Selecione uma categoria</option>
+            @for (categoria of categorias(); track categoria.id) {
+              <option [ngValue]="categoria.id">{{ categoria.nome }}</option>
+            }
+          </select>
+          @if (form.controls.idCategoria.touched && form.controls.idCategoria.invalid) {
+            <small class="field-error">Selecione uma categoria.</small>
+          }
+        </div>
+        <div class="field">
+          <label for="preco">Preço</label>
+          <input id="preco" type="number" formControlName="preco" min="0.01" step="0.01" />
+          @if (form.controls.preco.touched && form.controls.preco.invalid) {
+            <small class="field-error">Informe um preço maior que zero.</small>
+          }
+        </div>
+        <div class="field">
+          <label for="estoque">Quantidade em estoque</label>
+          <input id="estoque" type="number" formControlName="estoque" min="0" step="1" />
+          @if (form.controls.estoque.touched && form.controls.estoque.invalid) {
+            <small class="field-error">O estoque não pode ser negativo.</small>
+          }
+        </div>
+        <div class="field full-field">
+          <label for="descricao">Descrição</label>
+          <textarea id="descricao" formControlName="descricao" maxlength="255" placeholder="Breve descrição do produto"></textarea>
+          <small>{{ form.controls.descricao.value.length }}/255 caracteres</small>
+        </div>
+        <div class="checkbox-field full-field">
+          <input id="ativo" type="checkbox" formControlName="ativo" />
+          <label for="ativo">Produto ativo no catálogo</label>
+        </div>
+      </div>
+      <div class="form-actions">
+        <a class="btn btn-secondary" routerLink="/produtos">Cancelar</a>
+        <button class="btn btn-primary" type="submit" [disabled]="saving()">
+          <img src="icons/save.svg" alt="" />{{ saving() ? 'Salvando...' : 'Salvar produto' }}
+        </button>
+      </div>
+    </form>
+  }
+</section>

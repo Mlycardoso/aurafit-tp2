@@ -1,12 +1,16 @@
 <div class="app-shell" [class.menu-open]="menuOpen()">
   <aside class="sidebar">
-    <a class="brand" routerLink="/marcas" (click)="closeMenu()">
+    <a class="brand" routerLink="/produtos" (click)="closeMenu()">
       <img src="logo-aurafit.png" alt="Logo AuraFit" />
       <span>AuraFit <small>Administração</small></span>
     </a>
 
     <nav aria-label="Cadastros administrativos">
       <span class="nav-label">Cadastros</span>
+      <a routerLink="/produtos" routerLinkActive="active" (click)="closeMenu()">
+        <img src="icons/package-plus.svg" alt="" />
+        Produtos
+      </a>
       <a routerLink="/marcas" routerLinkActive="active" (click)="closeMenu()">
         <img src="icons/package-plus.svg" alt="" />
         Marcas
