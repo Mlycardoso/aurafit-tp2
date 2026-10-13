@@ -1,4 +1,6 @@
 package br.unitins.tp2.service;
+import java.util.List;
+import java.util.Locale;
 import br.unitins.tp2.dto.*;
 import br.unitins.tp2.model.*;
 import br.unitins.tp2.repository.*;
@@ -14,7 +16,40 @@ public class ClienteServiceImpl implements ClienteService {
     @Inject CepService ceps;
     @Override
     @Transactional
-    public Cliente salvar(Long id, ClienteDTO dto) {
+    public Cliente create(ClienteRequestDTO dto) {
+        return salvar(null, dto);
+    }
+    @Override
+    @Transactional
+    public void update(long id, ClienteRequestDTO dto) {
+        salvar(id, dto);
+    }
+    @Override
+    @Transactional
+    public void delete(long id) {
+        if (!clientes.deleteById(id)) throw new NotFoundException();
+    }
+    @Override
+    public Cliente findById(long id) {
+        return clientes.findByIdOptional(id).orElseThrow(NotFoundException::new);
+    }
+    @Override
+    public List<Cliente> findAll(int page, int pageSize) {
+        return clientes.find("order by nome, id").page(page, pageSize).list();
+    }
+    @Override
+    public List<Cliente> findByNome(String nome, int page, int pageSize) {
+        return clientes.find("lower(nome) like ?1 order by nome, id", filtro(nome))
+                .page(page, pageSize).list();
+    }
+    @Override
+    public long count() { return clientes.count(); }
+    @Override
+    public long count(String nome) { return clientes.count("lower(nome) like ?1", filtro(nome)); }
+    private String filtro(String nome) {
+        return "%" + nome.trim().toLowerCase(Locale.ROOT) + "%";
+    }
+    private Cliente salvar(Long id, ClienteRequestDTO dto) {
         Cliente cliente = id == null ? new Cliente() : clientes.findByIdOptional(id).orElseThrow(NotFoundException::new);
         // A cidade e o estado sao confirmados pelo servidor, nunca aceitos do formulario.
         CepDTO cep = ceps.consultar(dto.cep());

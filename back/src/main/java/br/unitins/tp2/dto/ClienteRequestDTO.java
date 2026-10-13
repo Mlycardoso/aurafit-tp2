@@ -1,6 +1,6 @@
 package br.unitins.tp2.dto;
 import jakarta.validation.constraints.*;
-public record ClienteDTO(
+public record ClienteRequestDTO(
     @NotBlank @Size(min=2,max=120) String nome,
     @NotBlank @Email @Size(max=160) String email,
     @NotBlank @Pattern(regexp="[0-9]{10,11}", message="Informe um telefone com DDD.") String telefone,

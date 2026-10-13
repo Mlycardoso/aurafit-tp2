@@ -14,18 +14,25 @@ class ClienteResourceTest {
     }
     @Test void deveSalvarEditarEReutilizarMunicipio() {
         var first = given().contentType("application/json").body(dados()).post("/clientes")
-            .then().statusCode(201).body("municipio.estado.sigla", is("SP"))
+            .then().statusCode(200).body("municipio.estado.sigla", is("SP"))
             .extract().jsonPath();
         int id = first.getInt("id");
         var second = given().contentType("application/json").body(dados()).post("/clientes")
-            .then().statusCode(201).body("municipio.id", is(first.getInt("municipio.id")))
+            .then().statusCode(200).body("municipio.id", is(first.getInt("municipio.id")))
             .extract().jsonPath();
         try {
             var dto = dados(); dto.put("numero", "20");
             given().contentType("application/json").body(dto).put("/clientes/" + id)
-                .then().statusCode(200).body("numero", is("20"));
+                .then().statusCode(204);
             given().get("/clientes/" + id).then().statusCode(200)
                 .body("municipio.codigoIbge", is("3550308")).body("numero", is("20"));
+            given().queryParam("pageSize", 1).get("/clientes/nome/Cliente Teste")
+                .then().statusCode(200).body("totalItems", is(2))
+                .body("totalPages", is(2)).body("items.size()", is(1));
+            given().queryParam("page", 1).queryParam("pageSize", 1).get("/clientes")
+                .then().statusCode(200).body("items.size()", is(1));
+            given().get("/clientes/nome/inexistente").then().statusCode(200).body("totalItems", is(0));
+            given().queryParam("page", -1).get("/clientes").then().statusCode(400);
         } finally {
             given().delete("/clientes/" + id).then().statusCode(204);
             given().delete("/clientes/" + second.getInt("id")).then().statusCode(204);
