@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { getApiError } from '../../shared/api-error';
 import { Categoria } from '../categoria.model';
@@ -16,15 +17,21 @@ export class CategoriaLista {
   protected readonly items = signal<Categoria[]>([]);
   protected readonly loading = signal(true);
   protected readonly error = signal('');
+  private request?: Subscription;
+  private filtro = '';
 
   constructor() {
     this.load();
   }
 
-  protected load(nome = ''): void {
+  ngOnDestroy(): void { this.request?.unsubscribe(); }
+
+  protected load(nome = this.filtro): void {
+    this.filtro = nome;
+    this.request?.unsubscribe();
     this.loading.set(true);
     this.error.set('');
-    this.service.findAll(nome).subscribe({
+    this.request = this.service.findAll(nome).subscribe({
       next: (items) => {
         this.items.set(items);
         this.loading.set(false);

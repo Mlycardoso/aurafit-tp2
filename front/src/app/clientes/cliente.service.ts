@@ -19,6 +19,7 @@ export class ClienteService {
     return this.http.get<PageResponse<Cliente>>(url, { params: { page, pageSize: 10 } });
   }
   buscar(id: number) { return this.http.get<Cliente>(this.url + '/' + id); }
+  delete(id: number) { return this.http.delete<void>(this.url + '/' + id); }
   consultar(cep: string) { return this.http.get<Cep>(this.url + '/cep/' + cep); }
   salvar(id: number | null, dto: ClientePayload): Observable<Cliente | void> {
     return id ? this.http.put<void>(this.url + '/' + id, dto) : this.http.post<Cliente>(this.url, dto);

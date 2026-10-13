@@ -6,6 +6,7 @@ import br.unitins.tp2.dto.CategoriaDTO;
 import br.unitins.tp2.exception.ValidationException;
 import br.unitins.tp2.model.Categoria;
 import br.unitins.tp2.repository.CategoriaRepository;
+import br.unitins.tp2.repository.ProdutoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -16,6 +17,8 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Inject
     CategoriaRepository repository;
+    @Inject
+    ProdutoRepository produtos;
 
     @Override
     @Transactional
@@ -39,6 +42,11 @@ public class CategoriaServiceImpl implements CategoriaService {
     @Override
     @Transactional
     public void delete(long id) {
+        findById(id);
+        if (produtos.count("categoria.id", id) > 0) {
+            throw ValidationException.of("categoria",
+                    "Esta categoria possui produtos vinculados. Altere a categoria dos produtos antes de excluir.");
+        }
         if (!repository.deleteById(id)) {
             throw new NotFoundException("Categoria nao encontrada.");
         }

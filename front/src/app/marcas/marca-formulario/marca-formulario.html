@@ -15,7 +15,7 @@
 <section class="form-panel">
   @if (loading()) {
     <div class="loading-state">Carregando marca...</div>
-  } @else {
+  } @else if (!loadFailed()) {
     <form [formGroup]="form" (ngSubmit)="save()">
       <div class="form-grid">
         <div class="field">

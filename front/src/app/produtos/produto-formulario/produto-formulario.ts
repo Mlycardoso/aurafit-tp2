@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
 
 import { Categoria } from '../../categorias/categoria.model';
 import { CategoriaService } from '../../categorias/categoria.service';
@@ -25,30 +26,24 @@ export class ProdutoFormulario {
   protected readonly saving = signal(false);
   protected readonly loading = signal(true);
   protected readonly error = signal('');
+  protected readonly loadFailed = signal(false);
   protected readonly form = this.fb.nonNullable.group({
-    nome: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(80)]],
+    nome: ['', [Validators.required, Validators.pattern(/\S/), Validators.minLength(2), Validators.maxLength(80)]],
     descricao: ['', [Validators.maxLength(255)]],
-    preco: [0, [Validators.required, Validators.min(0.01)]],
-    estoque: [0, [Validators.required, Validators.min(0)]],
+    preco: [0, [Validators.required, Validators.min(0.01), Validators.max(99999999.99), Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
+    estoque: [0, [Validators.required, Validators.min(0), Validators.pattern(/^\d+$/)]],
     idCategoria: [0, [Validators.required, Validators.min(1)]],
     ativo: [true],
   });
 
   constructor() {
-    this.categoriaService.findAll().subscribe({
-      next: (categorias) => {
-        this.categorias.set(categorias.filter((categoria) => categoria.ativo));
-        if (!this.id) this.loading.set(false);
-      },
-      error: (error) => {
-        this.error.set(getApiError(error));
-        this.loading.set(false);
-      },
-    });
-
-    if (this.id) {
-      this.service.findById(this.id).subscribe({
-        next: (produto) => {
+    forkJoin({
+      categorias: this.categoriaService.findAll(),
+      produto: this.id ? this.service.findById(this.id) : of(null)
+    }).subscribe({
+        next: ({categorias, produto}) => {
+          this.categorias.set(categorias);
+          if (produto) {
           this.form.patchValue({
             nome: produto.nome,
             descricao: produto.descricao ?? '',
@@ -57,17 +52,19 @@ export class ProdutoFormulario {
             idCategoria: produto.categoria.id,
             ativo: produto.ativo,
           });
+          }
           this.loading.set(false);
         },
         error: (error) => {
           this.error.set(getApiError(error));
+          this.loadFailed.set(true);
           this.loading.set(false);
         },
       });
-    }
   }
 
   protected save(): void {
+    if (this.saving() || this.loadFailed() || this.loading()) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;

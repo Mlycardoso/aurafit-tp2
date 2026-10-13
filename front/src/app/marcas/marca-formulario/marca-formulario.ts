@@ -21,8 +21,9 @@ export class MarcaFormulario {
   protected readonly saving = signal(false);
   protected readonly loading = signal(!!this.id);
   protected readonly error = signal('');
+  protected readonly loadFailed = signal(false);
   protected readonly form = this.fb.nonNullable.group({
-    nome: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(80)]],
+    nome: ['', [Validators.required, Validators.pattern(/\S/), Validators.minLength(2), Validators.maxLength(80)]],
     descricao: ['', [Validators.maxLength(255)]],
     ativo: [true],
   });
@@ -36,6 +37,7 @@ export class MarcaFormulario {
         },
         error: (error) => {
           this.error.set(getApiError(error));
+          this.loadFailed.set(true);
           this.loading.set(false);
         },
       });
@@ -43,6 +45,7 @@ export class MarcaFormulario {
   }
 
   protected save(): void {
+    if (this.saving() || this.loadFailed()) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
