@@ -1,6 +1,9 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
+  { path: 'usuarios', loadComponent: () => import('./usuarios/usuario-lista').then(m => m.UsuarioLista) },
+  { path: 'usuarios/novo', loadComponent: () => import('./usuarios/usuario-formulario').then(m => m.UsuarioFormulario) },
+  { path: 'usuarios/editar/:id', loadComponent: () => import('./usuarios/usuario-formulario').then(m => m.UsuarioFormulario) },
   { path: 'clientes', loadComponent: () => import('./clientes/cliente-lista').then(m => m.ClienteLista) },
   { path: 'clientes/novo', loadComponent: () => import('./clientes/cliente-formulario').then(m => m.ClienteFormulario) },
   { path: 'clientes/editar/:id', loadComponent: () => import('./clientes/cliente-formulario').then(m => m.ClienteFormulario) },

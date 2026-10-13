@@ -1,0 +1,41 @@
+<section class="page-header">
+  <h1>Usuários</h1>
+  <a class="btn btn-primary" routerLink="/usuarios/novo"><img src="icons/plus.svg" alt="" />Novo usuário</a>
+</section>
+@if (error()) { <div class="alert error" role="alert">{{error()}}</div> }
+<section class="toolbar">
+  <div class="search-box">
+    <img src="icons/search.svg" alt="" />
+    <input #busca type="search" aria-label="Buscar usuário" placeholder="Buscar usuário pelo nome"
+      (input)="load(busca.value, 0, 300)" (keyup.enter)="load(busca.value)" />
+    <button type="button" class="btn btn-secondary" (click)="load(busca.value)">Buscar</button>
+  </div>
+  <span class="result-count">{{total()}} registro(s)</span>
+</section>
+<section class="data-panel">
+  @if (loading()) { <div class="loading-state">Carregando usuários...</div> }
+  @else if (!items().length) { <div class="empty-state">Nenhum usuário encontrado.</div> }
+  @else {
+    <table class="user-table">
+      <thead><tr><th>Nome</th><th>E-mail</th><th>Perfis</th><th>Situação</th><th aria-label="Ações"></th></tr></thead>
+      <tbody>
+        @for (usuario of items(); track usuario.id) {
+          <tr>
+            <td class="entity-name">{{usuario.nome}}</td><td>{{usuario.email}}</td>
+            <td>{{perfilNames(usuario)}}</td>
+            <td><span class="badge" [class.active]="usuario.ativo" [class.inactive]="!usuario.ativo">{{usuario.ativo ? 'Ativo' : 'Inativo'}}</span></td>
+            <td><div class="actions">
+              <a class="icon-button" [routerLink]="['/usuarios/editar', usuario.id]" title="Editar usuário"><img src="icons/pencil.svg" alt="Editar" /></a>
+              <button class="icon-button danger" type="button" title="Excluir usuário" [disabled]="deleting() !== null" (click)="remove(usuario)"><img src="icons/trash-2.svg" alt="Excluir" /></button>
+            </div></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</section>
+<nav class="pagination" aria-label="Páginas de usuários">
+  <button class="btn btn-secondary" [disabled]="loading() || page() === 0" (click)="load(search(), page()-1)">Anterior</button>
+  <span>Página {{page()+1}} de {{pages() || 1}}</span>
+  <button class="btn btn-secondary" [disabled]="loading() || page()+1 >= pages()" (click)="load(search(), page()+1)">Próxima</button>
+</nav>
