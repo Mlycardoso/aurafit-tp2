@@ -1,6 +1,9 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
+  { path: 'clientes', loadComponent: () => import('./clientes/cliente-lista').then(m => m.ClienteLista) },
+  { path: 'clientes/novo', loadComponent: () => import('./clientes/cliente-formulario').then(m => m.ClienteFormulario) },
+  { path: 'clientes/editar/:id', loadComponent: () => import('./clientes/cliente-formulario').then(m => m.ClienteFormulario) },
   { path: '', pathMatch: 'full', redirectTo: 'produtos' },
   {
     path: 'produtos',
