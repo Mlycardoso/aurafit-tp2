@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PageResponse } from '../shared/page-response.model';
+import { Cliente } from '../clientes/cliente.service';
 
 export type Perfil = 'ADMINISTRADOR' | 'ATENDENTE' | 'CLIENTE';
 export const perfis: {id: Perfil; nome: string}[] = [
@@ -9,9 +10,10 @@ export const perfis: {id: Perfil; nome: string}[] = [
   {id: 'CLIENTE', nome: 'Cliente'}
 ];
 export interface UsuarioPayload {
+  idCliente?: number | null;
   nome: string; email: string; ativo: boolean; perfis: Perfil[]; senha?: string | null;
 }
-export interface Usuario extends Omit<UsuarioPayload, 'senha'> { id: number; }
+export interface Usuario extends Omit<UsuarioPayload, 'senha'> { id: number; cliente?: Cliente | null; }
 
 @Injectable({providedIn: 'root'})
 export class UsuarioService {

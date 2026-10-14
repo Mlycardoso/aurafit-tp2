@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { UsuarioService, Perfil, perfis } from './usuario.service';
 import { getApiError } from '../shared/api-error';
+import { Cliente, ClienteService } from '../clientes/cliente.service';
 
 @Component({
   imports: [ReactiveFormsModule, RouterLink],
@@ -10,6 +11,20 @@ import { getApiError } from '../shared/api-error';
 })
 export class UsuarioFormulario {
   private service = inject(UsuarioService);
+  private clientes = inject(ClienteService);
+  protected cliente = signal<Cliente | null>(null);
+  protected buscandoCliente = signal(false);
+  protected vinculoError = signal('');
+  protected buscarCliente(cpf: string) {
+    if (this.buscandoCliente()) return;
+    this.vinculoError.set('');
+    if (!/^[0-9]{11}$/.test(cpf)) { this.vinculoError.set('Informe os 11 dígitos do CPF.'); return; }
+    this.buscandoCliente.set(true);
+    this.clientes.buscarCpf(cpf).subscribe({
+      next: c => { this.cliente.set(c); this.buscandoCliente.set(false); },
+      error: e => { this.vinculoError.set(getApiError(e)); this.buscandoCliente.set(false); }
+    });
+  }
   private router = inject(Router);
   private fb = inject(FormBuilder);
   protected id = Number(inject(ActivatedRoute).snapshot.paramMap.get('id')) || null;
@@ -33,6 +48,7 @@ export class UsuarioFormulario {
     if (this.id) this.service.buscar(this.id).subscribe({
       next: u => {
         this.form.patchValue({nome: u.nome, email: u.email, ativo: u.ativo});
+        this.cliente.set(u.cliente ?? null);
         this.selected.set(u.perfis); this.loading.set(false);
       },
       error: e => { this.error.set(getApiError(e)); this.loading.set(false); this.loadFailed.set(true); }
@@ -42,7 +58,7 @@ export class UsuarioFormulario {
     this.selected.update(current => checked ? [...current, perfil] : current.filter(p => p !== perfil));
   }
   protected save() {
-    if (this.saving() || this.loading() || this.loadFailed()) return;
+    if (this.saving() || this.loading() || this.loadFailed() || this.buscandoCliente()) return;
     this.submitted.set(true);
     this.form.markAllAsTouched();
     const v = this.form.getRawValue();
@@ -50,7 +66,7 @@ export class UsuarioFormulario {
     this.saving.set(true); this.error.set('');
     this.service.salvar(this.id, {
       nome: v.nome.trim(), email: v.email.trim(), ativo: v.ativo,
-      perfis: this.selected(), senha: v.senha || null
+      perfis: this.selected(), senha: v.senha || null, idCliente: this.cliente()?.id ?? null
     }).subscribe({
       next: () => { this.form.controls.senha.reset(); this.form.controls.confirmacao.reset(); this.router.navigate(['/usuarios']); },
       error: e => { this.error.set(getApiError(e)); this.saving.set(false); }

@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 import { vi } from 'vitest';
 import { UsuarioFormulario } from './usuario-formulario';
 import { UsuarioService } from './usuario.service';
+import { ClienteService } from '../clientes/cliente.service';
 
 describe('UsuarioFormulario', () => {
   let service: {buscar: ReturnType<typeof vi.fn>; salvar: ReturnType<typeof vi.fn>};
@@ -14,6 +15,7 @@ describe('UsuarioFormulario', () => {
     };
     TestBed.configureTestingModule({imports: [UsuarioFormulario], providers: [
       provideRouter([]), {provide: UsuarioService, useValue: service},
+      {provide: ClienteService, useValue: {buscarCpf: vi.fn()}},
       {provide: ActivatedRoute, useValue: {snapshot: {paramMap: convertToParamMap(id ? {id} : {})}}}
     ]});
     vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);

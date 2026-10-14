@@ -29,6 +29,10 @@ public class ClienteResource {
     }
     @GET @Path("cep/{cep}")
     public CepDTO consultar(@PathParam("cep") String cep) { return ceps.consultar(cep); }
+    @GET @Path("cpf/{cpf}")
+    public ClienteResponseDTO buscarPorCpf(@PathParam("cpf") @Pattern(regexp="[0-9]{11}") String cpf) {
+        return ClienteResponseMapper.toResponse(service.findByCpf(cpf));
+    }
     @GET @Path("{id}")
     public ClienteResponseDTO buscarPorId(@PathParam("id") long id) {
         return ClienteResponseMapper.toResponse(service.findById(id));

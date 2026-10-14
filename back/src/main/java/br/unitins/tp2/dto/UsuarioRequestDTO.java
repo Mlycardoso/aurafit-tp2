@@ -11,7 +11,8 @@ public record UsuarioRequestDTO(
         @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
         @NotBlank @Size(min = 15, max = 128) String senha,
         @NotNull Boolean ativo,
-        @NotEmpty Set<@NotNull Perfil> perfis) {
+        @NotEmpty Set<@NotNull Perfil> perfis,
+        @Positive Long idCliente) {
     @Override
     public String toString() { return "UsuarioRequestDTO[PROTEGIDO]"; }
 }

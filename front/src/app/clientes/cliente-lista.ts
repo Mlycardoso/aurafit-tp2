@@ -20,7 +20,7 @@ import { EMPTY, Subject, catchError, switchMap, timer } from 'rxjs';
     @if (loading()) { <div class="loading-state">Carregando clientes...</div> }
     @else {
       <table><thead><tr><th>Nome</th><th>E-mail</th><th>Município / UF</th><th>Ações</th></tr></thead><tbody>
-      @for (c of items(); track c.id) { <tr><td>{{c.nome}}</td><td>{{c.email}}</td>
+      @for (c of items(); track c.id) { <tr><td>{{c.nome}} <span class="badge" [class.active]="c.ativo !== false" [class.inactive]="c.ativo === false">{{c.ativo === false ? 'Inativo' : 'Ativo'}}</span></td><td>{{c.email}}</td>
       <td>{{c.municipio.nome}} / {{c.municipio.estado.sigla}}</td>
       <td><div class="actions"><a class="icon-button" [routerLink]="['/clientes/editar', c.id]" title="Editar cliente"><img src="icons/pencil.svg" alt="Editar" /></a>
       <button class="icon-button danger" type="button" title="Excluir cliente" [disabled]="deleting() !== null" (click)="remove(c)"><img src="icons/trash-2.svg" alt="Excluir" /></button></div></td></tr> }

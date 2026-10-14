@@ -5,6 +5,10 @@
 @else if (!loadFailed()) {
 <form class="form-panel" [formGroup]="form" (ngSubmit)="save()">
 <div class="form-grid two-columns">
+<div class="field"><label for="cpf">CPF</label><input id="cpf" formControlName="cpf" inputmode="numeric" maxlength="11" />
+@if (form.controls.cpf.touched && form.controls.cpf.invalid) { <small class="field-error">Informe os 11 dígitos do CPF.</small> }</div>
+<div class="field"><label for="nascimento">Data de nascimento</label><input id="nascimento" type="date" formControlName="dataNascimento" [max]="today" />
+@if (form.controls.dataNascimento.touched && form.controls.dataNascimento.invalid) { <small class="field-error">Informe uma data anterior a hoje.</small> }</div>
 <div class="field"><label for="nome">Nome completo</label><input id="nome" type="text" formControlName="nome" maxlength="120" />
 @if (form.controls.nome.touched && form.controls.nome.invalid) { <small class="field-error">Informe nome completo válido.</small> }</div>
 <div class="field"><label for="email">E-mail</label><input id="email" type="email" formControlName="email" maxlength="160" />
@@ -26,6 +30,18 @@
 @if (form.controls.numero.touched && form.controls.numero.invalid) { <small class="field-error">Informe número válido.</small> }</div>
 <div class="field"><label for="complemento">Complemento</label><input id="complemento" type="text" formControlName="complemento" maxlength="100" />
 @if (form.controls.complemento.touched && form.controls.complemento.invalid) { <small class="field-error">Informe complemento válido.</small> }</div>
+<section class="full-field">
+@for (control of extras.controls; track control; let i = $index) {
+  <div class="field">
+    <label [for]="'telefone-extra-' + i">Telefone adicional {{i + 1}}</label>
+    <div class="actions"><input [id]="'telefone-extra-' + i" type="tel" [formControl]="control" maxlength="11" />
+    <button class="icon-button danger" type="button" title="Remover telefone" (click)="removerTelefone(i)"><img src="icons/trash-2.svg" alt="Remover telefone" /></button></div>
+    @if (control.touched && control.invalid) { <small class="field-error">Informe 10 ou 11 dígitos, com DDD.</small> }
+  </div>
+}
+<button class="btn btn-secondary" type="button" [disabled]="extras.length >= 4" (click)="adicionarTelefone()"><img src="icons/plus.svg" alt="" />Adicionar telefone</button>
+</section>
+<div class="checkbox-field full-field"><input id="ativo" type="checkbox" formControlName="ativo" /><label for="ativo">Cliente ativo</label></div>
 </div>
 <div class="form-actions"><a class="btn btn-secondary" routerLink="/clientes">Cancelar</a><button class="btn btn-primary" type="submit" [disabled]="saving() || consulting() || !confirmed()"><img src="icons/save.svg" alt="" />{{saving() ? 'Salvando...' : 'Salvar cliente'}}</button></div>
 </form> }

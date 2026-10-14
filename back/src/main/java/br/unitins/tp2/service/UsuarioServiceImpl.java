@@ -7,6 +7,7 @@ import br.unitins.tp2.dto.*;
 import br.unitins.tp2.exception.ValidationException;
 import br.unitins.tp2.model.*;
 import br.unitins.tp2.repository.UsuarioRepository;
+import br.unitins.tp2.repository.ClienteRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -16,12 +17,14 @@ import jakarta.ws.rs.NotFoundException;
 public class UsuarioServiceImpl implements UsuarioService {
     @Inject UsuarioRepository repository;
     @Inject SenhaService senhas;
+    @Inject ClienteRepository clientes;
 
     @Override
     @Transactional
     public Usuario create(UsuarioRequestDTO dto) {
         Usuario usuario = new Usuario();
         copiar(usuario, dto.nome(), dto.email(), dto.ativo(), dto.perfis());
+        vincular(usuario, dto.idCliente());
         usuario.senhaHash = senhas.gerarHash(dto.senha());
         repository.persistAndFlush(usuario);
         return usuario;
@@ -32,6 +35,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     public Usuario update(long id, UsuarioUpdateDTO dto) {
         Usuario usuario = findById(id);
         copiar(usuario, dto.nome(), dto.email(), dto.ativo(), dto.perfis());
+        vincular(usuario, dto.idCliente());
         if (dto.senha() != null) {
             if (dto.senha().isBlank()) throw ValidationException.of("senha", "Informe uma senha valida.");
             usuario.senhaHash = senhas.gerarHash(dto.senha());
@@ -51,6 +55,19 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.ativo = ativo;
         usuario.perfis.clear();
         usuario.perfis.addAll(perfis);
+    }
+
+    private void vincular(Usuario usuario, Long idCliente) {
+        if (idCliente == null) { usuario.cliente = null; return; }
+        Cliente cliente = clientes.findById(idCliente);
+        if (cliente == null) throw ValidationException.of("idCliente", "Cliente nao encontrado.");
+        Usuario vinculado = repository.find("cliente.id", idCliente).firstResult();
+        if (vinculado != null && !vinculado.getId().equals(usuario.getId())) {
+            throw ValidationException.of("idCliente", "Este cliente ja possui um usuario vinculado.");
+        }
+        usuario.cliente = cliente;
+        // O DTO inclui os telefones depois que a transacao termina.
+        org.hibernate.Hibernate.initialize(cliente.telefones);
     }
 
     @Override

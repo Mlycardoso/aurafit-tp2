@@ -16,6 +16,8 @@ public final class ClienteResponseMapper {
                 cliente.cep, cliente.logradouro, cliente.bairro, cliente.numero,
                 cliente.complemento,
                 new MunicipioResponse(municipio.getId(), municipio.nome, municipio.codigoIbge,
-                        new EstadoResponse(estado.getId(), estado.nome, estado.sigla)));
+                        new EstadoResponse(estado.getId(), estado.nome, estado.sigla)),
+                cliente.cpf, cliente.dataNascimento, cliente.ativo,
+                cliente.telefones.isEmpty() ? java.util.List.of(cliente.telefone) : java.util.List.copyOf(cliente.telefones));
     }
 }

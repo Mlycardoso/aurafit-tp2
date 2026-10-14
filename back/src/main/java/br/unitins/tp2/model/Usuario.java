@@ -7,6 +7,9 @@ import jakarta.persistence.*;
 
 @Entity
 public class Usuario extends DefaultEntity {
+    @OneToOne
+    @JoinColumn(name = "cliente_id", unique = true)
+    public Cliente cliente;
     @Column(nullable = false, length = 120)
     public String nome;
     @Column(nullable = false, unique = true, length = 160)

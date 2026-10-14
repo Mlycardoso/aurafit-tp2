@@ -8,6 +8,7 @@ public interface ClienteService {
     void update(long id, @Valid ClienteRequestDTO dto);
     void delete(long id);
     Cliente findById(long id);
+    Cliente findByCpf(String cpf);
     List<Cliente> findAll(int page, int pageSize);
     List<Cliente> findByNome(String nome, int page, int pageSize);
     long count();

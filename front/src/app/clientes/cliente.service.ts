@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { PageResponse } from '../shared/page-response.model';
 export interface Cep { cep: string; logradouro: string; bairro: string; municipio: string; uf: string; }
 export interface ClientePayload {
+  cpf?: string | null; dataNascimento?: string | null; ativo?: boolean; telefones?: string[];
   nome: string; email: string; telefone: string; cep: string; logradouro: string;
   bairro: string; numero: string; complemento: string;
 }
@@ -19,6 +20,7 @@ export class ClienteService {
     return this.http.get<PageResponse<Cliente>>(url, { params: { page, pageSize: 10 } });
   }
   buscar(id: number) { return this.http.get<Cliente>(this.url + '/' + id); }
+  buscarCpf(cpf: string) { return this.http.get<Cliente>(this.url + '/cpf/' + cpf); }
   delete(id: number) { return this.http.delete<void>(this.url + '/' + id); }
   consultar(cep: string) { return this.http.get<Cep>(this.url + '/cep/' + cep); }
   salvar(id: number | null, dto: ClientePayload): Observable<Cliente | void> {

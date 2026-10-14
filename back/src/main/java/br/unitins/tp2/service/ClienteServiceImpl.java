@@ -8,12 +8,14 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+import br.unitins.tp2.exception.ValidationException;
 @ApplicationScoped
 public class ClienteServiceImpl implements ClienteService {
     @Inject ClienteRepository clientes;
     @Inject MunicipioRepository municipios;
     @Inject EstadoRepository estados;
     @Inject CepService ceps;
+    @Inject UsuarioRepository usuarios;
     @Override
     @Transactional
     public Cliente create(ClienteRequestDTO dto) {
@@ -27,11 +29,18 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     @Transactional
     public void delete(long id) {
+        if (usuarios.count("cliente.id", id) > 0) {
+            throw ValidationException.of("cliente", "Desvincule o usuario antes de excluir este cliente.");
+        }
         if (!clientes.deleteById(id)) throw new NotFoundException();
     }
     @Override
     public Cliente findById(long id) {
         return clientes.findByIdOptional(id).orElseThrow(NotFoundException::new);
+    }
+    @Override
+    public Cliente findByCpf(String cpf) {
+        return clientes.find("cpf", cpf).firstResultOptional().orElseThrow(NotFoundException::new);
     }
     @Override
     public List<Cliente> findAll(int page, int pageSize) {
@@ -51,6 +60,15 @@ public class ClienteServiceImpl implements ClienteService {
     }
     private Cliente salvar(Long id, ClienteRequestDTO dto) {
         Cliente cliente = id == null ? new Cliente() : clientes.findByIdOptional(id).orElseThrow(NotFoundException::new);
+        if (dto.cpf() != null) {
+            Cliente existente = clientes.find("cpf", dto.cpf()).firstResult();
+            if (existente != null && !existente.getId().equals(id)) {
+                throw ValidationException.of("cpf", "Ja existe um cliente com este CPF.");
+            }
+        }
+        if (dto.telefones() != null && dto.telefones().stream().distinct().count() != dto.telefones().size()) {
+            throw ValidationException.of("telefones", "Nao repita o mesmo telefone.");
+        }
         // A cidade e o estado sao confirmados pelo servidor, nunca aceitos do formulario.
         CepDTO cep = ceps.consultar(dto.cep());
         Estado estado = estados.find("sigla", cep.uf()).firstResult();
@@ -63,7 +81,12 @@ public class ClienteServiceImpl implements ClienteService {
             municipio.nome = cep.municipio(); municipio.estado = estado; municipios.persist(municipio);
         }
         cliente.nome = dto.nome().trim(); cliente.email = dto.email().trim();
-        cliente.telefone = dto.telefone(); cliente.cep = dto.cep();
+        cliente.cpf = dto.cpf();
+        cliente.dataNascimento = dto.dataNascimento();
+        if (dto.ativo() != null) cliente.ativo = dto.ativo();
+        cliente.telefones.clear();
+        cliente.telefones.addAll(dto.telefones() == null ? List.of(dto.telefone()) : dto.telefones());
+        cliente.telefone = cliente.telefones.getFirst(); cliente.cep = dto.cep();
         cliente.logradouro = dto.logradouro().trim(); cliente.bairro = dto.bairro().trim();
         cliente.numero = dto.numero().trim(); cliente.complemento = dto.complemento() == null ? "" : dto.complemento().trim();
         cliente.municipio = municipio;
