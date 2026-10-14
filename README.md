@@ -1,6 +1,6 @@
 # AuraFit TP2
 
-Plataforma web da AuraFit para gerenciamento e comercialização de suplementos esportivos.
+Plataforma web da AuraFit para gerenciamento e comercialização de whey protein.
 
 > Projeto em desenvolvimento.
 

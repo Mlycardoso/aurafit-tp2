@@ -36,7 +36,7 @@ class AuraFitResourceTest {
                 .when().get("/produtos")
                 .then().statusCode(200)
                 .body("items", hasSize(5))
-                .body("items[0].categoria.nome", is("Creatina"))
+                .body("items[0].categoria.nome", is("Blend de whey"))
                 .body("page", is(0))
                 .body("pageSize", is(5))
                 .body("totalItems", greaterThanOrEqualTo(7))
@@ -46,7 +46,7 @@ class AuraFitResourceTest {
     @Test
     void deveFiltrarProdutosPorNome() {
         given()
-                .when().get("/produtos/nome/Whey")
+                .when().get("/produtos/nome/Concentrado")
                 .then().statusCode(200)
                 .body("items", hasSize(2))
                 .body("totalItems", is(2));
