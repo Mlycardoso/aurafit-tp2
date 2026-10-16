@@ -4,7 +4,7 @@
     <h1>Marcas</h1>
     <p class="page-description">Gerencie as marcas disponíveis nos produtos da loja.</p>
   </div>
-  <a class="btn btn-primary" routerLink="/marcas/novo">
+  <a class="btn btn-primary" routerLink="/admin/marcas/novo">
     <img src="icons/plus.svg" alt="" />
     Nova marca
   </a>
@@ -39,7 +39,7 @@
             <td><span class="badge" [class.active]="item.ativo" [class.inactive]="!item.ativo">{{ item.ativo ? 'Ativa' : 'Inativa' }}</span></td>
             <td>
               <div class="actions">
-                <a class="icon-button" [routerLink]="['/marcas/editar', item.id]" title="Editar marca"><img src="icons/pencil.svg" alt="Editar" /></a>
+                <a class="icon-button" [routerLink]="['/admin/marcas/editar', item.id]" title="Editar marca"><img src="icons/pencil.svg" alt="Editar" /></a>
                 <button class="icon-button danger" type="button" title="Excluir marca" (click)="remove(item)"><img src="icons/trash-2.svg" alt="Excluir" /></button>
               </div>
             </td>

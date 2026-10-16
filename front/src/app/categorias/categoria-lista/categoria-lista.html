@@ -4,7 +4,7 @@
     <h1>Categorias</h1>
     <p class="page-description">Tipos de whey protein.</p>
   </div>
-  <a class="btn btn-primary" routerLink="/categorias/novo"><img src="icons/plus.svg" alt="" />Nova categoria</a>
+  <a class="btn btn-primary" routerLink="/admin/categorias/novo"><img src="icons/plus.svg" alt="" />Nova categoria</a>
 </section>
 
 @if (error()) {
@@ -36,7 +36,7 @@
             <td><span class="badge" [class.active]="item.ativo" [class.inactive]="!item.ativo">{{ item.ativo ? 'Ativa' : 'Inativa' }}</span></td>
             <td>
               <div class="actions">
-                <a class="icon-button" [routerLink]="['/categorias/editar', item.id]" title="Editar categoria"><img src="icons/pencil.svg" alt="Editar" /></a>
+                <a class="icon-button" [routerLink]="['/admin/categorias/editar', item.id]" title="Editar categoria"><img src="icons/pencil.svg" alt="Editar" /></a>
                 <button class="icon-button danger" type="button" title="Excluir categoria" (click)="remove(item)"><img src="icons/trash-2.svg" alt="Excluir" /></button>
               </div>
             </td>

@@ -84,7 +84,7 @@ export class ProdutoFormulario {
     this.saving.set(true);
     this.error.set('');
     request.subscribe({
-      next: () => this.router.navigate(['/produtos']),
+      next: () => this.router.navigate(['/admin/produtos']),
       error: (error) => {
         this.error.set(getApiError(error));
         this.saving.set(false);

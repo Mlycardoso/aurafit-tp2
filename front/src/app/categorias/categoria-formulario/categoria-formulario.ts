@@ -62,7 +62,7 @@ export class CategoriaFormulario {
     this.saving.set(true);
     this.error.set('');
     request.subscribe({
-      next: () => this.router.navigate(['/categorias']),
+      next: () => this.router.navigate(['/admin/categorias']),
       error: (error) => {
         this.error.set(getApiError(error));
         this.saving.set(false);

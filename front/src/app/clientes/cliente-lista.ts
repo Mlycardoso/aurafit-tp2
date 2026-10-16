@@ -8,7 +8,7 @@ import { EMPTY, Subject, catchError, switchMap, timer } from 'rxjs';
   imports: [RouterLink],
   template: `
     <section class="page-header"><h1>Clientes</h1>
-      <a class="btn btn-primary" routerLink="/clientes/novo"><img src="icons/plus.svg" alt="" />Novo cliente</a>
+      <a class="btn btn-primary" routerLink="/admin/clientes/novo"><img src="icons/plus.svg" alt="" />Novo cliente</a>
     </section>
     @if (error()) { <div class="alert error" role="alert">{{error()}}</div> }
     <section class="toolbar"><div class="search-box">
@@ -22,7 +22,7 @@ import { EMPTY, Subject, catchError, switchMap, timer } from 'rxjs';
       <table><thead><tr><th>Nome</th><th>E-mail</th><th>Município / UF</th><th>Ações</th></tr></thead><tbody>
       @for (c of items(); track c.id) { <tr><td>{{c.nome}} <span class="badge" [class.active]="c.ativo !== false" [class.inactive]="c.ativo === false">{{c.ativo === false ? 'Inativo' : 'Ativo'}}</span></td><td>{{c.email}}</td>
       <td>{{c.municipio.nome}} / {{c.municipio.estado.sigla}}</td>
-      <td><div class="actions"><a class="icon-button" [routerLink]="['/clientes/editar', c.id]" title="Editar cliente"><img src="icons/pencil.svg" alt="Editar" /></a>
+      <td><div class="actions"><a class="icon-button" [routerLink]="['/admin/clientes/editar', c.id]" title="Editar cliente"><img src="icons/pencil.svg" alt="Editar" /></a>
       <button class="icon-button danger" type="button" title="Excluir cliente" [disabled]="deleting() !== null" (click)="remove(c)"><img src="icons/trash-2.svg" alt="Excluir" /></button></div></td></tr> }
       </tbody></table>
       @if (!items().length) { <div class="empty-state">Nenhum cliente encontrado.</div> }

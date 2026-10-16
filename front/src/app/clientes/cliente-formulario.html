@@ -1,4 +1,4 @@
-<a class="back-link" routerLink="/clientes"><img src="icons/arrow-left.svg" alt="" />Voltar para clientes</a>
+<a class="back-link" routerLink="/admin/clientes"><img src="icons/arrow-left.svg" alt="" />Voltar para clientes</a>
 <section class="page-header"><h1>{{id ? 'Editar cliente' : 'Novo cliente'}}</h1></section>
 @if (error()) { <div class="alert error" role="alert">{{error()}}</div> }
 @if (loading()) { <div class="loading-state">Carregando cliente...</div> }
@@ -43,5 +43,5 @@
 </section>
 <div class="checkbox-field full-field"><input id="ativo" type="checkbox" formControlName="ativo" /><label for="ativo">Cliente ativo</label></div>
 </div>
-<div class="form-actions"><a class="btn btn-secondary" routerLink="/clientes">Cancelar</a><button class="btn btn-primary" type="submit" [disabled]="saving() || consulting() || !confirmed()"><img src="icons/save.svg" alt="" />{{saving() ? 'Salvando...' : 'Salvar cliente'}}</button></div>
+<div class="form-actions"><a class="btn btn-secondary" routerLink="/admin/clientes">Cancelar</a><button class="btn btn-primary" type="submit" [disabled]="saving() || consulting() || !confirmed()"><img src="icons/save.svg" alt="" />{{saving() ? 'Salvando...' : 'Salvar cliente'}}</button></div>
 </form> }

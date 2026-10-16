@@ -62,7 +62,7 @@ export class MarcaFormulario {
     this.saving.set(true);
     this.error.set('');
     request.subscribe({
-      next: () => this.router.navigate(['/marcas']),
+      next: () => this.router.navigate(['/admin/marcas']),
       error: (error) => {
         this.error.set(getApiError(error));
         this.saving.set(false);

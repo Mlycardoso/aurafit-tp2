@@ -3,34 +3,34 @@
 } @else {
   <div class="app-shell" [class.menu-open]="menuOpen()">
     <aside class="sidebar">
-      <a class="brand" routerLink="/produtos" (click)="closeMenu()">
+      <a class="brand" routerLink="/admin/produtos" (click)="closeMenu()">
         <img src="logo-aurafit.png" alt="Logo AuraFit" />
         <span>AuraFit <small>Administração</small></span>
       </a>
 
       <nav aria-label="Cadastros administrativos">
         <span class="nav-label">Cadastros</span>
-        <a routerLink="/usuarios" routerLinkActive="active" (click)="closeMenu()"
+        <a routerLink="/admin/usuarios" routerLinkActive="active" (click)="closeMenu()"
           ><img src="icons/users.svg" alt="" />Usuários</a
         >
-        <a routerLink="/clientes" routerLinkActive="active" (click)="closeMenu()"
+        <a routerLink="/admin/clientes" routerLinkActive="active" (click)="closeMenu()"
           ><img src="icons/tags.svg" alt="" />Clientes</a
         >
-        <a routerLink="/produtos" routerLinkActive="active" (click)="closeMenu()">
+        <a routerLink="/admin/produtos" routerLinkActive="active" (click)="closeMenu()">
           <img src="icons/package-plus.svg" alt="" />
           Produtos
         </a>
-        <a routerLink="/marcas" routerLinkActive="active" (click)="closeMenu()">
+        <a routerLink="/admin/marcas" routerLinkActive="active" (click)="closeMenu()">
           <img src="icons/package-plus.svg" alt="" />
           Marcas
         </a>
-        <a routerLink="/categorias" routerLinkActive="active" (click)="closeMenu()">
+        <a routerLink="/admin/categorias" routerLinkActive="active" (click)="closeMenu()">
           <img src="icons/tags.svg" alt="" />
           Categorias
         </a>
       </nav>
 
-      <div class="sidebar-footer">AuraFit</div>
+      <div class="sidebar-footer"><a routerLink="/loja" (click)="closeMenu()">Ver loja</a></div>
     </aside>
 
     <button class="backdrop" aria-label="Fechar menu" (click)="closeMenu()"></button>

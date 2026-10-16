@@ -82,7 +82,7 @@ export class ClienteFormulario {
     if (new Set(telefones).size !== telefones.length) { this.error.set('Não repita o mesmo telefone.'); return; }
     this.saving.set(true); this.error.set('');
     this.service.salvar(this.id, {...v, cpf: v.cpf || null, dataNascimento: v.dataNascimento || null, telefones, nome: v.nome.trim(), email: v.email.trim(), cep: v.cep.replace('-', '')}).subscribe({
-      next: () => this.router.navigate(['/clientes']),
+      next: () => this.router.navigate(['/admin/clientes']),
       error: e => { this.error.set(e.status === 503 ? 'Não foi possível confirmar o CEP. Tente novamente.' : getApiError(e)); this.saving.set(false); }
     });
   }

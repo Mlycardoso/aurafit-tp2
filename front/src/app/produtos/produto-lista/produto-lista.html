@@ -4,7 +4,7 @@
     <h1>Produtos</h1>
     <p class="page-description">Gerencie os produtos e suas respectivas categorias.</p>
   </div>
-  <a class="btn btn-primary" routerLink="/produtos/novo"><img src="icons/plus.svg" alt="" />Novo produto</a>
+  <a class="btn btn-primary" routerLink="/admin/produtos/novo"><img src="icons/plus.svg" alt="" />Novo produto</a>
 </section>
 
 @if (error()) {
@@ -38,7 +38,7 @@
             <td><span class="badge" [class.active]="item.ativo" [class.inactive]="!item.ativo">{{ item.ativo ? 'Ativo' : 'Inativo' }}</span></td>
             <td>
               <div class="actions">
-                <a class="icon-button" [routerLink]="['/produtos/editar', item.id]" title="Editar produto"><img src="icons/pencil.svg" alt="Editar" /></a>
+                <a class="icon-button" [routerLink]="['/admin/produtos/editar', item.id]" title="Editar produto"><img src="icons/pencil.svg" alt="Editar" /></a>
                 <button class="icon-button danger" type="button" title="Excluir produto" (click)="remove(item)"><img src="icons/trash-2.svg" alt="Excluir" /></button>
               </div>
             </td>

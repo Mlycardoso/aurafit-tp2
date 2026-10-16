@@ -1,4 +1,4 @@
-<a class="back-link" routerLink="/produtos"><img src="icons/arrow-left.svg" alt="" />Voltar para produtos</a>
+<a class="back-link" routerLink="/admin/produtos"><img src="icons/arrow-left.svg" alt="" />Voltar para produtos</a>
 
 <section class="page-header">
   <div>
@@ -62,7 +62,7 @@
         </div>
       </div>
       <div class="form-actions">
-        <a class="btn btn-secondary" routerLink="/produtos">Cancelar</a>
+        <a class="btn btn-secondary" routerLink="/admin/produtos">Cancelar</a>
         <button class="btn btn-primary" type="submit" [disabled]="saving()">
           <img src="icons/save.svg" alt="" />{{ saving() ? 'Salvando...' : 'Salvar produto' }}
         </button>

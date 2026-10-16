@@ -68,7 +68,7 @@ export class UsuarioFormulario {
       nome: v.nome.trim(), email: v.email.trim(), ativo: v.ativo,
       perfis: this.selected(), senha: v.senha || null, idCliente: this.cliente()?.id ?? null
     }).subscribe({
-      next: () => { this.form.controls.senha.reset(); this.form.controls.confirmacao.reset(); this.router.navigate(['/usuarios']); },
+      next: () => { this.form.controls.senha.reset(); this.form.controls.confirmacao.reset(); this.router.navigate(['/admin/usuarios']); },
       error: e => { this.error.set(getApiError(e)); this.saving.set(false); }
     });
   }

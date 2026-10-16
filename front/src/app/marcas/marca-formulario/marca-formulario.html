@@ -1,4 +1,4 @@
-<a class="back-link" routerLink="/marcas"><img src="icons/arrow-left.svg" alt="" />Voltar para marcas</a>
+<a class="back-link" routerLink="/admin/marcas"><img src="icons/arrow-left.svg" alt="" />Voltar para marcas</a>
 
 <section class="page-header">
   <div>
@@ -36,7 +36,7 @@
         </div>
       </div>
       <div class="form-actions">
-        <a class="btn btn-secondary" routerLink="/marcas">Cancelar</a>
+        <a class="btn btn-secondary" routerLink="/admin/marcas">Cancelar</a>
         <button class="btn btn-primary" type="submit" [disabled]="saving()">
           <img src="icons/save.svg" alt="" />{{ saving() ? 'Salvando...' : 'Salvar marca' }}
         </button>

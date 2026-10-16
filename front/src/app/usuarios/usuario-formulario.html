@@ -1,4 +1,4 @@
-<a class="back-link" routerLink="/usuarios"><img src="icons/arrow-left.svg" alt="" />Voltar para usuários</a>
+<a class="back-link" routerLink="/admin/usuarios"><img src="icons/arrow-left.svg" alt="" />Voltar para usuários</a>
 <section class="page-header"><h1>{{id ? 'Editar usuário' : 'Novo usuário'}}</h1></section>
 @if (error()) { <div class="alert error" role="alert">{{error()}}</div> }
 @if (loading()) { <div class="loading-state">Carregando usuário...</div> }
@@ -10,7 +10,7 @@
         @if (cliente(); as c) {
           <p>{{c.nome}} · CPF {{c.cpf}}</p>
           <p>{{c.email}} · {{c.telefones?.join(', ') || c.telefone}}</p>
-          <a [routerLink]="['/clientes/editar', c.id]">Ver cadastro do cliente</a>
+          <a [routerLink]="['/admin/clientes/editar', c.id]">Ver cadastro do cliente</a>
           <button class="btn btn-secondary" type="button" (click)="cliente.set(null)">Desvincular</button>
         } @else {
           <div class="search-box"><input #cpfCliente id="cliente-cpf" inputmode="numeric" maxlength="11" placeholder="CPF do cliente" />
@@ -44,7 +44,7 @@
       <div class="checkbox-field full-field"><input id="ativo" type="checkbox" formControlName="ativo" /><label for="ativo">Usuário ativo</label></div>
     </div>
     <div class="form-actions">
-      <a class="btn btn-secondary" routerLink="/usuarios">Cancelar</a>
+      <a class="btn btn-secondary" routerLink="/admin/usuarios">Cancelar</a>
       <button class="btn btn-primary" type="submit" [disabled]="saving()"><img src="icons/save.svg" alt="" />{{saving() ? 'Salvando...' : 'Salvar usuário'}}</button>
     </div>
   </form>
