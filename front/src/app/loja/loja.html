@@ -1,0 +1,504 @@
+<div class="shop">
+  <a class="skip" href="#conteudo" (click)="scrollTo('conteudo', $event)">Ir para o conteúdo</a>
+  <div class="announcement">Um universo de sabores. Só whey protein.</div>
+  <header class="store-header">
+    <a class="store-brand" routerLink="/loja" aria-label="AuraFit, início"
+      ><img src="/logo-aurafit.png" alt="" /><span
+        >AuraFit<small>WHEY, DO SEU JEITO.</small></span
+      ></a
+    >
+    <label class="store-search"
+      ><img src="/icons/search.svg" alt="" /><input
+        aria-label="Buscar whey"
+        placeholder="Qual whey combina com você?"
+        [ngModel]="query()"
+        (ngModelChange)="search($event)"
+        type="search"
+    /></label>
+    <div class="header-actions">
+      <a routerLink="/loja/conta" title="Minha conta" aria-label="Minha conta"
+        ><img src="/icons/user-round.svg" alt="" /><span>Minha conta</span></a
+      >
+      <a routerLink="/loja/favoritos" title="Favoritos" aria-label="Favoritos"
+        ><img src="/icons/heart.svg" alt="" /><span>Favoritos</span></a
+      >
+      <a
+        routerLink="/loja/carrinho"
+        title="Carrinho"
+        [attr.aria-label]="'Carrinho, ' + state.count() + ' itens'"
+        ><img src="/icons/shopping-bag.svg" alt="" /><b>{{ state.count() }}</b></a
+      >
+    </div>
+  </header>
+  <nav class="types" aria-label="Tipos de whey">
+    <button [class.chosen]="!category()" (click)="chooseCategory('')">Todos os wheys</button>
+    @for (type of types(); track type) {
+      <button [class.chosen]="category() === type" (click)="chooseCategory(type)">
+        {{ type }}
+      </button>
+    }
+  </nav>
+  <main id="conteudo" tabindex="-1">
+    @if (view() === 'catalog' && !query() && !category()) {
+      <section class="hero" aria-label="AuraFit, especializada em whey">
+        <div class="hero-copy">
+          <span class="kicker">SUA ROTINA. SEU SABOR.</span>
+          <h1>AuraFit<span>.</span></h1>
+          <p>Seu próximo scoop<br />começa aqui.</p>
+          <a class="primary" href="#catalogo" (click)="scrollTo('catalogo', $event)"
+            >Comprar whey <img src="/icons/arrow-up-right.svg" alt="" /></a
+          ><small>Concentrado, isolado, hidrolisado e blends.</small>
+        </div>
+        <span class="image-caption">Composição ilustrativa</span>
+      </section>
+      <div class="editorial-line">
+        <span>100% focada em whey</span><span>Encontre seu tipo</span><span>Escolha seu sabor</span>
+      </div>
+    }
+    @if (loading()) {
+      <section class="status" aria-live="polite">
+        <span class="spinner"></span>
+        <h1>Carregando seus wheys...</h1>
+      </section>
+    } @else if (error()) {
+      <section class="status" role="alert">
+        <h1>Vamos tentar de novo?</h1>
+        <p>{{ error() }}</p>
+        <button class="primary" (click)="load()">Tentar novamente</button>
+      </section>
+    } @else if (view() === 'catalog' || view() === 'favorites') {
+      <section class="catalog section" id="catalogo" tabindex="-1">
+        <div class="section-heading">
+          <div>
+            <span class="kicker">{{
+              view() === 'favorites' ? 'SUA SELEÇÃO' : 'ENCONTRE O SEU'
+            }}</span>
+            <h2>{{ view() === 'favorites' ? 'Seus favoritos' : 'Whey para a sua rotina' }}</h2>
+          </div>
+          <span class="muted">{{ filtered().length }} produtos</span>
+        </div>
+        @if (view() === 'favorites') {
+          <p class="muted">Sua seleção fica salva neste navegador.</p>
+        }
+        <div class="catalog-tools">
+          <button
+            class="outline filter-trigger"
+            (click)="filtersOpen.set(!filtersOpen())"
+            [attr.aria-expanded]="filtersOpen()"
+            aria-controls="filtros"
+          >
+            <img src="/icons/sliders-horizontal.svg" alt="" />Filtros
+          </button>
+          <span class="muted desktop-label">{{ category() || 'Todos os tipos de whey' }}</span>
+          <label class="sort"
+            >Ordenar por
+            <select
+              aria-label="Ordenar produtos"
+              [ngModel]="sort()"
+              (ngModelChange)="sort.set($event); page.set(1)"
+            >
+              <option value="name">Nome</option>
+              <option value="low">Menor preço</option>
+              <option value="high">Maior preço</option>
+            </select></label
+          >
+        </div>
+        <div class="catalog-body">
+          <aside
+            class="filters"
+            id="filtros"
+            [class.open]="filtersOpen()"
+            aria-label="Filtros de produtos"
+          >
+            <div class="filter-title">
+              <strong>Filtrar por</strong
+              ><button class="text-action" (click)="clear()">Limpar</button>
+            </div>
+            <label
+              >Tipo de whey<select
+                [ngModel]="category()"
+                (ngModelChange)="category.set($event); page.set(1)"
+              >
+                <option value="">Todos</option>
+                @for (type of types(); track type) {
+                  <option [value]="type">{{ type }}</option>
+                }
+              </select></label
+            >
+            <label
+              >Marca<select [ngModel]="brand()" (ngModelChange)="brand.set($event); page.set(1)">
+                <option value="">Todas</option>
+                @for (item of brands(); track item) {
+                  <option [value]="item">{{ item }}</option>
+                }
+              </select></label
+            >
+            <label
+              >Sabor<select [ngModel]="taste()" (ngModelChange)="taste.set($event); page.set(1)">
+                <option value="">Todos</option>
+                @for (item of flavors(); track item) {
+                  <option [value]="item">{{ item | titlecase }}</option>
+                }
+              </select></label
+            >
+            <label
+              >Peso<select [ngModel]="size()" (ngModelChange)="size.set($event); page.set(1)">
+                <option value="">Todos</option>
+                @for (item of sizes(); track item) {
+                  <option [value]="item">{{ item }}</option>
+                }
+              </select></label
+            >
+            <label
+              >Até {{ maxPrice() | currency: 'BRL'
+              }}<input
+                type="range"
+                min="0"
+                [max]="ceiling()"
+                step="1"
+                [ngModel]="maxPrice()"
+                (ngModelChange)="maxPrice.set(+$event); page.set(1)"
+            /></label>
+            <p class="filter-note">O whey certo começa pela sua escolha.</p>
+          </aside>
+          <div class="results">
+            @if (!visible().length) {
+              <div class="status">
+                <img src="/icons/search.svg" alt="" width="32" />
+                <h2>
+                  {{
+                    view() === 'favorites'
+                      ? 'Nenhum favorito por aqui'
+                      : 'Não encontramos esse whey'
+                  }}
+                </h2>
+                <p>Experimente outro termo ou ajuste os filtros.</p>
+                <button class="outline" (click)="clear()">Limpar filtros</button>
+              </div>
+            }
+            <div class="product-grid">
+              @for (p of visible(); track p.id) {
+                <article class="product">
+                  <div class="product-photo">
+                    <a [routerLink]="['/loja/produto', p.id]" [attr.aria-label]="'Ver ' + p.nome"
+                      ><img
+                        [src]="image(p)"
+                        [alt]="p.imagemUrl ? p.nome : 'Embalagem ilustrativa de whey'"
+                        loading="lazy"
+                    /></a>
+                    <button
+                      class="favorite"
+                      [class.saved]="state.favorites().includes(p.id)"
+                      [attr.aria-label]="
+                        state.favorites().includes(p.id)
+                          ? 'Remover dos favoritos ' + p.nome
+                          : 'Favoritar ' + p.nome
+                      "
+                      [attr.aria-pressed]="state.favorites().includes(p.id)"
+                      (click)="state.favorite(p.id)"
+                    >
+                      <img src="/icons/heart.svg" alt="" />
+                    </button>
+                    @if (!p.imagemUrl) {
+                      <small>Imagem ilustrativa</small>
+                    }
+                  </div>
+                  <div class="product-info">
+                    <span class="product-type">{{ p.categoria.nome }}</span
+                    ><a class="product-name" [routerLink]="['/loja/produto', p.id]">{{ p.nome }}</a
+                    ><span class="product-meta"
+                      >{{ (flavor(p) | titlecase) || 'Sabor não informado' }} ·
+                      {{ weight(p) || 'Peso não informado' }}</span
+                    ><small class="muted">Marca: {{ p.marca?.nome || 'não informada' }}</small
+                    ><strong class="price">{{ p.preco | currency: 'BRL' }}</strong
+                    ><a class="variant-link" [routerLink]="['/loja/produto', p.id]"
+                      >Ver opções <span aria-hidden="true">→</span></a
+                    ><button class="buy" [disabled]="p.estoque < 1" (click)="state.add(p)">
+                      {{ p.estoque < 1 ? 'Indisponível' : 'Adicionar'
+                      }}<img src="/icons/plus.svg" alt="" />
+                    </button>
+                  </div>
+                </article>
+              }
+            </div>
+            <nav class="pages" aria-label="Paginação">
+              <button
+                class="icon"
+                aria-label="Página anterior"
+                [disabled]="page() === 1"
+                (click)="page.set(page() - 1)"
+              >
+                <img src="/icons/chevron-left.svg" alt="" /></button
+              ><span>{{ page() }} de {{ pages() }}</span
+              ><button
+                class="icon"
+                aria-label="Próxima página"
+                [disabled]="page() >= pages()"
+                (click)="page.set(page() + 1)"
+              >
+                <img src="/icons/chevron-right.svg" alt="" />
+              </button>
+            </nav>
+          </div>
+        </div>
+      </section>
+    } @else if (view() === 'detail') {
+      <section class="section">
+        <a class="back" routerLink="/loja"
+          ><img src="/icons/arrow-left.svg" alt="" />Voltar para a loja</a
+        >
+        @if (selected(); as p) {
+          <div class="detail">
+            <figure class="detail-photo">
+              <img
+                [src]="image(p)"
+                [alt]="p.imagemUrl ? p.nome : 'Embalagem ilustrativa de whey'"
+              />
+              <figcaption>
+                {{
+                  p.imagemUrl ? p.nome : 'Imagem ilustrativa. A embalagem real pode ser diferente.'
+                }}
+              </figcaption>
+            </figure>
+            <div class="detail-info">
+              <span class="kicker">{{ p.categoria.nome }}</span>
+              <h1>{{ p.nome }}</h1>
+              <p class="muted">Marca: {{ p.marca?.nome || 'não informada' }}</p>
+              <p>{{ p.descricao }}</p>
+              <strong class="detail-price">{{ p.preco | currency: 'BRL' }}</strong
+              ><span class="stock">{{
+                p.ativo && p.estoque > 0 ? 'Em estoque' : 'Indisponível'
+              }}</span>
+              <label class="option-label"
+                >Opções desta categoria<select
+                  aria-label="Escolher opção da categoria"
+                  [ngModel]="p.id"
+                  (ngModelChange)="selectVariant(+$event)"
+                >
+                  @for (v of variants(); track v.id) {
+                    <option [ngValue]="v.id">
+                      {{ (flavor(v) | titlecase) || v.nome }} ·
+                      {{ weight(v) || 'Peso não informado' }}
+                    </option>
+                  }
+                </select></label
+              >
+              <div class="add-row">
+                <label class="quantity"
+                  >Quantidade<input
+                    type="number"
+                    min="1"
+                    [max]="p.estoque"
+                    [ngModel]="quantity()"
+                    (ngModelChange)="quantity.set(+$event)" /></label
+                ><button
+                  class="primary"
+                  [disabled]="!p.ativo || p.estoque < 1 || quantity() < 1 || quantity() > p.estoque"
+                  (click)="state.add(p, quantity())"
+                >
+                  Adicionar ao carrinho<img src="/icons/shopping-bag.svg" alt="" /></button
+                ><button
+                  class="icon"
+                  aria-label="Favoritar produto"
+                  [attr.aria-pressed]="state.favorites().includes(p.id)"
+                  (click)="state.favorite(p.id)"
+                >
+                  <img src="/icons/heart.svg" alt="" />
+                </button>
+              </div>
+              <div class="shipping">
+                <h3>Entrega</h3>
+                <label
+                  >CEP
+                  <div class="cep-input">
+                    <input
+                      [(ngModel)]="cep"
+                      inputmode="numeric"
+                      maxlength="9"
+                      placeholder="00000-000"
+                      (ngModelChange)="address.set(''); cepError.set('')"
+                    /><button class="outline" [disabled]="cepBusy()" (click)="lookupCep()">
+                      {{ cepBusy() ? 'Consultando...' : 'Consultar' }}
+                    </button>
+                  </div></label
+                >
+                @if (cepError()) {
+                  <p role="alert">{{ cepError() }}</p>
+                }
+                @if (address()) {
+                  <p>{{ address() }}</p>
+                }
+                <p class="muted">Cotação de frete e prazo ainda indisponíveis.</p>
+              </div>
+              <details>
+                <summary>Informações do produto</summary>
+                <p>{{ p.descricao || 'Descrição não informada.' }}</p>
+                <p>
+                  Informações nutricionais ainda não cadastradas. Consulte o rótulo do fabricante.
+                </p>
+              </details>
+            </div>
+          </div>
+        } @else {
+          <div class="status">
+            <h1>Produto não encontrado</h1>
+            <a class="primary" routerLink="/loja">Explorar wheys</a>
+          </div>
+        }
+      </section>
+    } @else if (view() === 'cart' || view() === 'checkout') {
+      <section class="section">
+        <a class="back" routerLink="/loja"
+          ><img src="/icons/arrow-left.svg" alt="" />Continuar comprando</a
+        >
+        <div class="section-heading">
+          <h1>{{ view() === 'checkout' ? 'Revisar sua compra' : 'Seu carrinho' }}</h1>
+          <span>{{ state.count() }} itens</span>
+        </div>
+        @if (!rows().length) {
+          <div class="status">
+            <h2>Seu próximo scoop está na vitrine.</h2>
+            <p>Escolha um whey para começar.</p>
+            <a class="primary" routerLink="/loja">Explorar wheys</a>
+          </div>
+        } @else {
+          <div class="checkout-layout">
+            <div>
+              @for (row of rows(); track row.id) {
+                <article class="cart-row">
+                  @if (row.product; as p) {
+                    <img class="cart-photo" [src]="image(p)" alt="Embalagem ilustrativa" />
+                    <div class="cart-info">
+                      <a [routerLink]="['/loja/produto', p.id]">{{ p.nome }}</a
+                      ><small>{{ p.categoria.nome }}</small
+                      ><strong>{{ p.preco | currency: 'BRL' }}</strong>
+                      @if (!p.ativo || row.quantity > p.estoque) {
+                        <p class="error-text">
+                          Quantidade indisponível. Ajuste ou remova este item.
+                        </p>
+                      }
+                      <div class="stepper">
+                        <button
+                          class="icon"
+                          [attr.aria-label]="'Diminuir quantidade de ' + p.nome"
+                          [disabled]="row.quantity <= 1"
+                          (click)="state.quantity(row.id, row.quantity - 1, p.estoque)"
+                        >
+                          <img src="/icons/minus.svg" alt="" /></button
+                        ><span>{{ row.quantity }}</span
+                        ><button
+                          class="icon"
+                          [attr.aria-label]="'Aumentar quantidade de ' + p.nome"
+                          [disabled]="row.quantity >= p.estoque || row.quantity >= 99"
+                          (click)="state.quantity(row.id, row.quantity + 1, p.estoque)"
+                        >
+                          <img src="/icons/plus.svg" alt="" />
+                        </button>
+                      </div>
+                    </div>
+                  } @else {
+                    <p>Produto não está mais disponível.</p>
+                  }
+                  <button
+                    class="icon"
+                    [attr.aria-label]="'Remover ' + (row.product?.nome || 'produto')"
+                    (click)="state.remove(row.id)"
+                  >
+                    <img src="/icons/trash-2.svg" alt="" />
+                  </button>
+                </article>
+              }
+              @if (view() === 'checkout') {
+                <div class="checkout-form">
+                  <h2>1. Identificação</h2>
+                  <label
+                    >Nome completo<input [(ngModel)]="customer.nome" autocomplete="name" /></label
+                  ><label
+                    >E-mail<input type="email" [(ngModel)]="customer.email" autocomplete="email"
+                  /></label>
+                  <h2>2. Endereço e entrega</h2>
+                  <label
+                    >CEP
+                    <div class="cep-input">
+                      <input
+                        [(ngModel)]="cep"
+                        inputmode="numeric"
+                        maxlength="9"
+                        (ngModelChange)="address.set(''); cepError.set('')"
+                      /><button class="outline" [disabled]="cepBusy()" (click)="lookupCep()">
+                        Consultar
+                      </button>
+                    </div></label
+                  >
+                  @if (cepError()) {
+                    <p role="alert">{{ cepError() }}</p>
+                  }
+                  @if (address()) {
+                    <p>{{ address() }}</p>
+                  }
+                  <label>Número<input [(ngModel)]="customer.numero" /></label
+                  ><label>Complemento<input [(ngModel)]="customer.complemento" /></label>
+                  <p class="muted">
+                    As opções de entrega estarão disponíveis após a integração de frete.
+                  </p>
+                  <h2>3. Pagamento</h2>
+                  <p>
+                    Pagamento ainda indisponível. Nenhum pedido será enviado e nenhuma cobrança será
+                    realizada.
+                  </p>
+                </div>
+              }
+            </div>
+            <aside class="order-summary">
+              <h2>Resumo</h2>
+              <div>
+                <span>Subtotal</span><strong>{{ total() | currency: 'BRL' }}</strong>
+              </div>
+              <div><span>Frete</span><span>A calcular</span></div>
+              <p>O valor final depende da entrega.</p>
+              @if (view() === 'cart') {
+                <button class="primary" [disabled]="cartInvalid()" routerLink="/loja/checkout">
+                  Revisar compra<img src="/icons/arrow-up-right.svg" alt="" />
+                </button>
+              } @else {
+                <button class="primary" disabled>Finalização indisponível</button>
+              }
+              <small>Carrinho salvo neste navegador. Disponibilidade sujeita à confirmação.</small>
+            </aside>
+          </div>
+        }
+      </section>
+    } @else if (view() === 'account') {
+      <section class="status section">
+        <span class="kicker">SEU ESPAÇO AURAFIT</span>
+        <h1>Minha conta</h1>
+        <p>O acesso à conta ainda não está disponível.</p>
+        <p>Por enquanto, seu carrinho e seus favoritos ficam neste navegador.</p>
+        <a class="primary" routerLink="/loja">Voltar para a loja</a>
+      </section>
+    }
+  </main>
+  <footer>
+    <div>
+      <a class="footer-brand" routerLink="/loja">AuraFit<span>.</span></a>
+      <p>Whey protein, do seu jeito.</p>
+    </div>
+    <div>
+      <strong>Explore</strong><a routerLink="/loja">Todos os wheys</a
+      ><a routerLink="/loja/favoritos">Seus favoritos</a
+      ><a routerLink="/loja/carrinho">Seu carrinho</a>
+    </div>
+    <div>
+      <strong>Essencialmente whey.</strong>
+      <p>Uma loja inteiramente dedicada<br />ao seu próximo scoop.</p>
+    </div>
+    <small class="footer-bottom"
+      >AuraFit · Imagens de embalagens sem foto cadastrada são ilustrativas.</small
+    >
+  </footer>
+  @if (state.notice()) {
+    <div class="toast" role="status">
+      {{ state.notice() }}<a routerLink="/loja/carrinho">Ver carrinho</a>
+    </div>
+  }
+</div>
