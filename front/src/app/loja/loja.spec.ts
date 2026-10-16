@@ -77,6 +77,19 @@ describe('Loja', () => {
     component.search('Whey');
     expect(component.page()).toBe(1);
   });
+  it('ajusta a pagina ao remover o ultimo favorito dela', () => {
+    service.findAll.mockReturnValue(of({
+      items: Array.from({ length: 9 }, (_, index) => ({ ...products[0], id: index + 1 })),
+      page: 0, totalPages: 1
+    }));
+    const component = TestBed.createComponent(Loja).componentInstance;
+    component.view.set('favorites');
+    component.state.favorites.set(Array.from({ length: 9 }, (_, index) => index + 1));
+    component.page.set(2);
+    component.state.favorite(9);
+    expect(component.currentPage()).toBe(1);
+    expect(component.visible().length).toBe(8);
+  });
   it('exibe erro recuperavel sem inventar produtos', () => {
     service.findAll.mockReturnValue(throwError(() => new Error('offline')));
     const component = TestBed.createComponent(Loja).componentInstance;

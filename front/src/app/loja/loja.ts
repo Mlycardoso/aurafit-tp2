@@ -82,7 +82,8 @@ export class Loja {
       );
   });
   readonly pages = computed(() => Math.max(1, Math.ceil(this.filtered().length / 8)));
-  readonly visible = computed(() => this.filtered().slice((this.page() - 1) * 8, this.page() * 8));
+  readonly currentPage = computed(() => Math.min(this.page(), this.pages()));
+  readonly visible = computed(() => this.filtered().slice((this.currentPage() - 1) * 8, this.currentPage() * 8));
   readonly rows = computed(() =>
     this.state.cart().map((row) => ({
       ...row,

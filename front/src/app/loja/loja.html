@@ -225,16 +225,16 @@
               <button
                 class="icon"
                 aria-label="Página anterior"
-                [disabled]="page() === 1"
-                (click)="page.set(page() - 1)"
+                [disabled]="currentPage() === 1"
+                (click)="page.set(currentPage() - 1)"
               >
                 <img src="/icons/chevron-left.svg" alt="" /></button
-              ><span>{{ page() }} de {{ pages() }}</span
+              ><span>{{ currentPage() }} de {{ pages() }}</span
               ><button
                 class="icon"
                 aria-label="Próxima página"
-                [disabled]="page() >= pages()"
-                (click)="page.set(page() + 1)"
+                [disabled]="currentPage() >= pages()"
+                (click)="page.set(currentPage() + 1)"
               >
                 <img src="/icons/chevron-right.svg" alt="" />
               </button>
