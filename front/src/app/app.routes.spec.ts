@@ -3,16 +3,31 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router, Routes } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { routes } from './app.routes';
+import { adminRoutes } from './admin/admin.routes';
+import { lojaRoutes } from './loja/loja.routes';
+import { AdminLayout } from './admin/admin-layout';
 
 @Component({ template: '' })
 class RouteTarget {}
 
 describe('Rotas administrativas', () => {
   beforeEach(() => {
-    const testRoutes: Routes = routes.map(route => route.loadComponent
-      ? { ...route, loadComponent: undefined, component: RouteTarget }
-      : route);
+    const stubPages = (pages: Routes): Routes => pages.map(route => route.loadComponent
+      ? { ...route, loadComponent: undefined, component: RouteTarget } : route);
+    const testRoutes: Routes = routes.map(route => route.path === 'admin'
+      ? { ...route, loadComponent: undefined, loadChildren: undefined, component: AdminLayout, children: stubPages(adminRoutes) }
+      : route.path === 'loja'
+        ? { ...route, loadChildren: undefined, children: stubPages(lojaRoutes) }
+        : route);
     TestBed.configureTestingModule({ providers: [provideRouter(testRoutes)] });
+  });
+
+  it('separa o menu administrativo da loja', async () => {
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/admin/produtos');
+    expect(harness.routeNativeElement?.textContent).toContain('Ver loja');
+    await harness.navigateByUrl('/loja');
+    expect(harness.routeNativeElement?.textContent ?? '').not.toContain('Ver loja');
   });
 
   for (const cadastro of ['produtos', 'marcas', 'categorias', 'clientes', 'usuarios']) {

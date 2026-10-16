@@ -1,6 +1,3 @@
-@if (storePage()) {
-  <router-outlet />
-} @else {
   <div class="app-shell" [class.menu-open]="menuOpen()">
     <aside class="sidebar">
       <a class="brand" routerLink="/admin/produtos" (click)="closeMenu()">
@@ -56,4 +53,3 @@
       </main>
     </div>
   </div>
-}
