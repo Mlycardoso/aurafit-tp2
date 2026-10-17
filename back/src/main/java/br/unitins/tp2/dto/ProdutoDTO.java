@@ -34,5 +34,7 @@ public record ProdutoDTO(
         Long idCategoria,
 
         @Min(value = 1, message = "A marca deve ser valida.")
-        Long idMarca) {
+        Long idMarca,
+
+        java.util.List<@NotNull @Min(1) Long> idsFornecedores) {
 }

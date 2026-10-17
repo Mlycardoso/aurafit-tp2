@@ -68,6 +68,20 @@
           <textarea id="descricao" formControlName="descricao" maxlength="255" placeholder="Breve descrição do produto"></textarea>
           <small>{{ form.controls.descricao.value.length }}/255 caracteres</small>
         </div>
+        <fieldset class="full-field">
+          <legend>Fornecedores</legend>
+          @for (fornecedor of fornecedores(); track fornecedor.id) {
+            <div class="checkbox-field">
+              <input #opcao type="checkbox" [id]="'fornecedor-' + fornecedor.id"
+                [checked]="form.controls.idsFornecedores.value.includes(fornecedor.id)"
+                (change)="selecionarFornecedor(fornecedor.id, opcao.checked)" />
+              <label [for]="'fornecedor-' + fornecedor.id">{{ fornecedor.nome }}{{ fornecedor.ativo ? '' : ' (inativo)' }}</label>
+            </div>
+          } @empty {
+            <p>Nenhum fornecedor cadastrado.</p>
+            <a routerLink="/admin/fornecedores/novo">Cadastrar fornecedor</a>
+          }
+        </fieldset>
         <div class="checkbox-field full-field">
           <input id="ativo" type="checkbox" formControlName="ativo" />
           <label for="ativo">Produto ativo no catálogo</label>

@@ -62,6 +62,7 @@ public class ProdutoResource {
 
     @PUT
     @Path("/{id}")
+    @jakarta.transaction.Transactional
     public ProdutoResponseDTO update(@PathParam("id") long id, @Valid ProdutoDTO dto) {
         return ProdutoResponseDTO.valueOf(service.update(id, dto));
     }

@@ -5,8 +5,8 @@
 @else if (!loadFailed()) {
 <form class="form-panel" [formGroup]="form" (ngSubmit)="save()">
 <div class="form-grid two-columns">
-<div class="field"><label for="cnpj">CNPJ</label><input id="cnpj" formControlName="cnpj" maxlength="14" placeholder="Sem pontuação" />
-@if (form.controls.cnpj.touched && form.controls.cnpj.invalid) { <small class="field-error">Informe 14 caracteres, sem pontuação, com os dois últimos numéricos.</small> }</div>
+<div class="field"><label for="cnpj">CNPJ</label><input id="cnpj" formControlName="cnpj" documentoMask="cnpj" maxlength="18" placeholder="00.000.000/0000-00" />
+@if (form.controls.cnpj.touched && form.controls.cnpj.invalid) { <small class="field-error">Informe um CNPJ completo, com os dois últimos caracteres numéricos.</small> }</div>
 <div class="field"><label for="nome">Razão social</label><input id="nome" type="text" formControlName="nome" maxlength="120" />
 @if (form.controls.nome.touched && form.controls.nome.invalid) { <small class="field-error">Informe uma razão social válida.</small> }</div>
 <div class="field"><label for="email">E-mail</label><input id="email" type="email" formControlName="email" maxlength="160" />

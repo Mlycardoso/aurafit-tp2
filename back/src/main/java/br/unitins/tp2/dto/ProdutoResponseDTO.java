@@ -12,7 +12,10 @@ public record ProdutoResponseDTO(
         Integer estoque,
         Boolean ativo,
         CategoriaResponseDTO categoria,
-        MarcaResponseDTO marca) {
+        MarcaResponseDTO marca,
+        java.util.List<FornecedorResumo> fornecedores) {
+
+    public record FornecedorResumo(Long id, String nome, boolean ativo) {}
 
     public static ProdutoResponseDTO valueOf(Produto produto) {
         return new ProdutoResponseDTO(
@@ -23,6 +26,8 @@ public record ProdutoResponseDTO(
                 produto.getEstoque(),
                 produto.getAtivo(),
                 CategoriaResponseDTO.valueOf(produto.getCategoria()),
-                produto.getMarca() == null ? null : MarcaResponseDTO.valueOf(produto.getMarca()));
+                produto.getMarca() == null ? null : MarcaResponseDTO.valueOf(produto.getMarca()),
+                produto.getFornecedores().stream()
+                        .map(f -> new FornecedorResumo(f.getId(), f.nome, f.ativo)).toList());
     }
 }

@@ -7,6 +7,7 @@ import { Categoria } from '../../categorias/categoria.model';
 import { CategoriaService } from '../../categorias/categoria.service';
 import { Marca } from '../../marcas/marca.model';
 import { MarcaService } from '../../marcas/marca.service';
+import { Fornecedor, FornecedorService } from '../../fornecedores/fornecedor.service';
 import { getApiError } from '../../shared/api-error';
 import { ProdutoPayload } from '../produto.model';
 import { ProdutoService } from '../produto.service';
@@ -24,6 +25,8 @@ export class ProdutoFormulario {
   private readonly categoriaService = inject(CategoriaService);
   private readonly marcaService = inject(MarcaService);
   protected readonly marcas = signal<Marca[]>([]);
+  private readonly fornecedorService = inject(FornecedorService);
+  protected readonly fornecedores = signal<Fornecedor[]>([]);
 
   protected readonly id = Number(this.route.snapshot.paramMap.get('id')) || null;
   protected readonly categorias = signal<Categoria[]>([]);
@@ -38,6 +41,7 @@ export class ProdutoFormulario {
     estoque: [0, [Validators.required, Validators.min(0), Validators.pattern(/^\d+$/)]],
     idCategoria: [0, [Validators.required, Validators.min(1)]],
     idMarca: [0],
+    idsFornecedores: this.fb.nonNullable.control<number[]>([]),
     ativo: [true],
   });
 
@@ -45,9 +49,11 @@ export class ProdutoFormulario {
     forkJoin({
       categorias: this.categoriaService.findAll(),
       marcas: this.marcaService.findAll(),
+      fornecedores: this.fornecedorService.listarOpcoes(),
       produto: this.id ? this.service.findById(this.id) : of(null)
     }).subscribe({
-        next: ({categorias, marcas, produto}) => {
+        next: ({categorias, marcas, fornecedores, produto}) => {
+          this.fornecedores.set(fornecedores);
           this.marcas.set(marcas);
           this.categorias.set(categorias);
           if (produto) {
@@ -58,6 +64,7 @@ export class ProdutoFormulario {
             estoque: produto.estoque,
             idCategoria: produto.categoria.id,
             idMarca: produto.marca?.id ?? 0,
+            idsFornecedores: produto.fornecedores?.map(f => f.id) ?? [],
             ativo: produto.ativo,
           });
           }
@@ -86,6 +93,7 @@ export class ProdutoFormulario {
       estoque: Number(value.estoque),
       idCategoria: Number(value.idCategoria),
       idMarca: Number(value.idMarca) || null,
+      idsFornecedores: value.idsFornecedores,
       ativo: value.ativo,
     };
     const request = this.id ? this.service.update(this.id, payload) : this.service.create(payload);
@@ -99,5 +107,11 @@ export class ProdutoFormulario {
         this.saving.set(false);
       },
     });
+  }
+
+  protected selecionarFornecedor(id: number, selecionado: boolean): void {
+    const control = this.form.controls.idsFornecedores;
+    control.setValue(selecionado ? [...new Set([...control.value, id])] : control.value.filter(value => value !== id));
+    control.markAsDirty();
   }
 }

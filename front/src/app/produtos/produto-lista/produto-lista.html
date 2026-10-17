@@ -31,7 +31,11 @@
       <tbody>
         @for (item of items(); track item.id) {
           <tr>
-            <td class="entity-name">{{ item.nome }}</td>
+            <td class="entity-name">{{ item.nome }}
+              @for (fornecedor of item.fornecedores; track fornecedor.id) {
+                <div><small>{{ fornecedor.nome }}</small></div>
+              }
+            </td>
             <td>{{ item.marca?.nome || 'Não informada' }}</td>
             <td>{{ item.categoria.nome }}</td>
             <td>{{ item.preco | currency: 'BRL' }}</td>

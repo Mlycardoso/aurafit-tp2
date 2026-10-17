@@ -1,3 +1,4 @@
+import { DocumentoMask, DocumentoPipe, limparDocumento } from '../shared/documento-mask';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -6,7 +7,7 @@ import { getApiError } from '../shared/api-error';
 import { Cliente, ClienteService } from '../clientes/cliente.service';
 
 @Component({
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, DocumentoMask, DocumentoPipe],
   templateUrl: './usuario-formulario.html'
 })
 export class UsuarioFormulario {
@@ -17,6 +18,7 @@ export class UsuarioFormulario {
   protected vinculoError = signal('');
   protected buscarCliente(cpf: string) {
     if (this.buscandoCliente()) return;
+    cpf = limparDocumento(cpf, 'cpf');
     this.vinculoError.set('');
     if (!/^[0-9]{11}$/.test(cpf)) { this.vinculoError.set('Informe os 11 dígitos do CPF.'); return; }
     this.buscandoCliente.set(true);

@@ -56,4 +56,44 @@ class FornecedorResourceTest {
         given().queryParam("page", -1).get("/fornecedores").then().statusCode(400);
         given().get("/fornecedores/cep/01001000").then().statusCode(200).body("uf", is("SP"));
     }
+
+    @Test
+    void deveVincularFornecedoresEProtegerExclusao() {
+        int fornecedor = given().contentType("application/json").body(dados("12345678000195"))
+                .post("/fornecedores").then().statusCode(200).extract().path("id");
+        int outro = given().contentType("application/json").body(dados("12ABC34501DE35"))
+                .post("/fornecedores").then().statusCode(200).extract().path("id");
+        int categoria = given().contentType("application/json")
+                .body(Map.of("nome", "Categoria " + java.util.UUID.randomUUID(), "ativo", true))
+                .post("/categorias").then().statusCode(201).extract().path("id");
+        Integer produto = null;
+        try {
+            var dto = new HashMap<String, Object>(Map.of("nome", "Whey " + java.util.UUID.randomUUID(),
+                    "preco", 99.90, "estoque", 10, "ativo", true, "idCategoria", categoria,
+                    "idsFornecedores", java.util.List.of(fornecedor, outro)));
+            produto = given().contentType("application/json").body(dto).post("/produtos")
+                    .then().statusCode(201).body("fornecedores.id", containsInAnyOrder(fornecedor, outro))
+                    .extract().path("id");
+            given().get("/produtos/" + produto).then().statusCode(200).body("fornecedores.size()", is(2));
+            given().delete("/fornecedores/" + fornecedor).then().statusCode(400);
+            dto.put("idsFornecedores", java.util.List.of(99999999));
+            given().contentType("application/json").body(dto).put("/produtos/" + produto).then().statusCode(400);
+            dto.put("idsFornecedores", java.util.List.of(fornecedor, fornecedor));
+            given().contentType("application/json").body(dto).put("/produtos/" + produto).then().statusCode(400);
+            dto.put("idsFornecedores", java.util.List.of(outro));
+            given().contentType("application/json").body(dto).put("/produtos/" + produto)
+                    .then().statusCode(200).body("fornecedores.id", contains(outro));
+            dto.remove("idsFornecedores");
+            given().contentType("application/json").body(dto).put("/produtos/" + produto)
+                    .then().statusCode(200).body("fornecedores.id", contains(outro));
+            dto.put("idsFornecedores", java.util.List.of());
+            given().contentType("application/json").body(dto).put("/produtos/" + produto)
+                    .then().statusCode(200).body("fornecedores", empty());
+        } finally {
+            if (produto != null) given().delete("/produtos/" + produto).then().statusCode(204);
+            given().delete("/fornecedores/" + fornecedor).then().statusCode(204);
+            given().delete("/fornecedores/" + outro).then().statusCode(204);
+            given().delete("/categorias/" + categoria).then().statusCode(204);
+        }
+    }
 }

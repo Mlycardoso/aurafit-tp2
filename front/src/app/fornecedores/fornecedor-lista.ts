@@ -1,3 +1,4 @@
+import { DocumentoPipe } from '../shared/documento-mask';
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Fornecedor, FornecedorService } from './fornecedor.service';
@@ -5,7 +6,7 @@ import { getApiError } from '../shared/api-error';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EMPTY, Subject, catchError, switchMap, timer } from 'rxjs';
 @Component({
-  imports: [RouterLink],
+  imports: [RouterLink, DocumentoPipe],
   template: `
     <section class="page-header"><h1>Fornecedores</h1>
       <a class="btn btn-primary" routerLink="/admin/fornecedores/novo"><img src="icons/plus.svg" alt="" />Novo fornecedor</a>
@@ -20,7 +21,7 @@ import { EMPTY, Subject, catchError, switchMap, timer } from 'rxjs';
     @if (loading()) { <div class="loading-state">Carregando fornecedores...</div> }
     @else {
       <table><thead><tr><th>Razão social</th><th>CNPJ</th><th>E-mail</th><th>Telefone</th><th>Município / UF</th><th>Ações</th></tr></thead><tbody>
-      @for (c of items(); track c.id) { <tr><td>{{c.nome}} <span class="badge" [class.active]="c.ativo !== false" [class.inactive]="c.ativo === false">{{c.ativo === false ? 'Inativo' : 'Ativo'}}</span></td><td>{{c.cnpj}}</td><td>{{c.email}}</td><td>{{c.telefone}}</td>
+      @for (c of items(); track c.id) { <tr><td>{{c.nome}} <span class="badge" [class.active]="c.ativo !== false" [class.inactive]="c.ativo === false">{{c.ativo === false ? 'Inativo' : 'Ativo'}}</span></td><td>{{c.cnpj | documento: 'cnpj'}}</td><td>{{c.email}}</td><td>{{c.telefone}}</td>
       <td>{{c.municipio.nome}} / {{c.municipio.estado.sigla}}</td>
       <td><div class="actions"><a class="icon-button" [routerLink]="['/admin/fornecedores/editar', c.id]" title="Editar fornecedor"><img src="icons/pencil.svg" alt="Editar" /></a>
       <button class="icon-button danger" type="button" title="Excluir fornecedor" [disabled]="deleting() !== null" (click)="remove(c)"><img src="icons/trash-2.svg" alt="Excluir" /></button></div></td></tr> }

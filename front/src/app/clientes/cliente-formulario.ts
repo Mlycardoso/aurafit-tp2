@@ -1,3 +1,4 @@
+import { DocumentoMask } from '../shared/documento-mask';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -6,7 +7,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ClienteService } from './cliente.service';
 import { getApiError } from '../shared/api-error';
 @Component({
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, DocumentoMask],
   templateUrl: './cliente-formulario.html'
 })
 export class ClienteFormulario {

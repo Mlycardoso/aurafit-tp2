@@ -15,6 +15,7 @@ public class FornecedorServiceImpl implements FornecedorService {
     @Inject MunicipioRepository municipios;
     @Inject EstadoRepository estados;
     @Inject CepService ceps;
+    @Inject ProdutoRepository produtos;
     @Override
     @Transactional
     public Fornecedor create(FornecedorRequestDTO dto) {
@@ -28,6 +29,9 @@ public class FornecedorServiceImpl implements FornecedorService {
     @Override
     @Transactional
     public void delete(long id) {
+        if (produtos.count("select count(p) from Produto p join p.fornecedores f where f.id = ?1", id) > 0) {
+            throw ValidationException.of("fornecedor", "Desvincule os produtos antes de excluir este fornecedor.");
+        }
         if (!fornecedores.deleteById(id)) throw new NotFoundException();
     }
     @Override

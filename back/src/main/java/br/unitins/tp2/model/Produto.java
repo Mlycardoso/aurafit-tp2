@@ -1,6 +1,10 @@
 package br.unitins.tp2.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinTable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,6 +36,14 @@ public class Produto extends DefaultEntity {
     @ManyToOne
     @JoinColumn(name = "id_marca")
     private Marca marca;
+
+    @ManyToMany
+    @JoinTable(name = "produto_fornecedor",
+            joinColumns = @JoinColumn(name = "produto_id"),
+            inverseJoinColumns = @JoinColumn(name = "fornecedor_id"))
+    private List<Fornecedor> fornecedores = new ArrayList<>();
+
+    public List<Fornecedor> getFornecedores() { return fornecedores; }
 
     public Marca getMarca() { return marca; }
 

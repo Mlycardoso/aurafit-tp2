@@ -10,6 +10,7 @@ export interface Produto {
   ativo: boolean;
   categoria: Categoria;
   marca?: Marca | null;
+  fornecedores?: { id: number; nome: string; ativo: boolean }[];
 }
 
 export interface ProdutoPayload {
@@ -20,4 +21,5 @@ export interface ProdutoPayload {
   ativo: boolean;
   idCategoria: number;
   idMarca?: number | null;
+  idsFornecedores?: number[];
 }

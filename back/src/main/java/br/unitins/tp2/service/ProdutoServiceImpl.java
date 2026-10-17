@@ -20,6 +20,9 @@ public class ProdutoServiceImpl implements ProdutoService {
     ProdutoRepository repository;
 
     @Inject
+    br.unitins.tp2.repository.FornecedorRepository fornecedorRepository;
+
+    @Inject
     CategoriaRepository categoriaRepository;
 
     @Inject
@@ -85,6 +88,16 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     private void copy(ProdutoDTO dto, Produto produto) {
+        if (dto.idsFornecedores() != null) {
+            if (dto.idsFornecedores().stream().distinct().count() != dto.idsFornecedores().size()) {
+                throw ValidationException.of("idsFornecedores", "Nao repita o mesmo fornecedor.");
+            }
+            var fornecedores = dto.idsFornecedores().stream().map(id ->
+                    fornecedorRepository.findByIdOptional(id).orElseThrow(() ->
+                            ValidationException.of("idsFornecedores", "Fornecedor nao encontrado."))).toList();
+            produto.getFornecedores().clear();
+            produto.getFornecedores().addAll(fornecedores);
+        }
         produto.setNome(dto.nome().trim());
         produto.setDescricao(normalize(dto.descricao()));
         produto.setPreco(dto.preco());

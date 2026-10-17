@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { EMPTY, Observable, expand, reduce } from 'rxjs';
 import { PageResponse } from '../shared/page-response.model';
 export interface Cep { cep: string; logradouro: string; bairro: string; municipio: string; uf: string; }
 export interface FornecedorPayload {
@@ -20,6 +20,12 @@ export class FornecedorService {
     return this.http.get<PageResponse<Fornecedor>>(url, { params: { page, pageSize: 10 } });
   }
   buscar(id: number) { return this.http.get<Fornecedor>(this.url + '/' + id); }
+  listarOpcoes(): Observable<Fornecedor[]> {
+    return this.listar('', 0).pipe(
+      expand(p => p.page + 1 < p.totalPages ? this.listar('', p.page + 1) : EMPTY),
+      reduce((items, p) => [...items, ...p.items], [] as Fornecedor[]),
+    );
+  }
   buscarCnpj(cnpj: string) { return this.http.get<Fornecedor>(this.url + '/cnpj/' + cnpj); }
   delete(id: number) { return this.http.delete<void>(this.url + '/' + id); }
   consultar(cep: string) { return this.http.get<Cep>(this.url + '/cep/' + cep); }

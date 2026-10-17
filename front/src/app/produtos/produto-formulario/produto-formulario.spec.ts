@@ -6,6 +6,7 @@ import { ProdutoFormulario } from './produto-formulario';
 import { ProdutoService } from '../produto.service';
 import { MarcaService } from '../../marcas/marca.service';
 import { CategoriaService } from '../../categorias/categoria.service';
+import { FornecedorService } from '../../fornecedores/fornecedor.service';
 
 describe('Marca do produto', () => {
   for (const marca of [null, { id: 3, nome: 'Marca exemplo', ativo: true }]) {
@@ -21,6 +22,7 @@ describe('Marca do produto', () => {
             update,
           } },
           { provide: MarcaService, useValue: { findAll: () => of(marca ? [marca] : []) } },
+          { provide: FornecedorService, useValue: { listarOpcoes: () => of([{ id: 5, nome: 'Fornecedor exemplo', ativo: true }]) } },
           { provide: CategoriaService, useValue: { findAll: () => of([{ id: 1, nome: 'Concentrado', ativo: true }]) } },
         ],
       });
@@ -29,8 +31,11 @@ describe('Marca do produto', () => {
       await fixture.whenStable();
       const select = fixture.nativeElement.querySelector('#marca') as HTMLSelectElement;
       expect(select.selectedOptions[0].textContent).toContain(marca?.nome ?? 'Sem marca informada');
+      const fornecedor = fixture.nativeElement.querySelector('#fornecedor-5') as HTMLInputElement;
+      fornecedor.checked = true;
+      fornecedor.dispatchEvent(new Event('change'));
       fixture.nativeElement.querySelector('form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-      expect(update).toHaveBeenCalledWith(1, expect.objectContaining({ idMarca: marca?.id ?? null }));
+      expect(update).toHaveBeenCalledWith(1, expect.objectContaining({ idMarca: marca?.id ?? null, idsFornecedores: [5] }));
     });
   }
 });

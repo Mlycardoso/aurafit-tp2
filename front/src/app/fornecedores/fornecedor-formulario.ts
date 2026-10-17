@@ -1,3 +1,4 @@
+import { DocumentoMask } from '../shared/documento-mask';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -6,7 +7,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FornecedorService } from './fornecedor.service';
 import { getApiError } from '../shared/api-error';
 @Component({
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, DocumentoMask],
   templateUrl: './fornecedor-formulario.html'
 })
 export class FornecedorFormulario {

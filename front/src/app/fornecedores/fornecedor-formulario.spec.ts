@@ -22,6 +22,10 @@ describe('FornecedorFormulario', () => {
     vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     const fixture = TestBed.createComponent(FornecedorFormulario);
     fixture.detectChanges();
+    const documento = fixture.nativeElement.querySelector('#cnpj') as HTMLInputElement;
+    expect(documento.value).toBe('12.345.678/0001-95');
+    documento.value = '12.345.678/0001-95';
+    documento.dispatchEvent(new Event('input', {bubbles: true}));
     expect((fixture.nativeElement.querySelector('#telefone-extra-0') as HTMLInputElement).value).toBe('1133334444');
     fixture.nativeElement.querySelector('form').dispatchEvent(new Event('submit', {bubbles: true, cancelable: true}));
     expect(salvar).toHaveBeenCalledWith(1, expect.objectContaining({
