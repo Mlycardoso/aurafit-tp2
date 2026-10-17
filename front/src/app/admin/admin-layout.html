@@ -7,6 +7,9 @@
 
       <nav aria-label="Cadastros administrativos">
         <span class="nav-label">Cadastros</span>
+        <a routerLink="/admin/fornecedores" routerLinkActive="active" (click)="closeMenu()">
+          <img src="icons/package-plus.svg" alt="" />Fornecedores
+        </a>
         <a routerLink="/admin/usuarios" routerLinkActive="active" (click)="closeMenu()"
           ><img src="icons/users.svg" alt="" />Usuários</a
         >

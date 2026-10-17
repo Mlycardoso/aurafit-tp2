@@ -1,0 +1,45 @@
+<a class="back-link" routerLink="/admin/fornecedores"><img src="icons/arrow-left.svg" alt="" />Voltar para fornecedores</a>
+<section class="page-header"><h1>{{id ? 'Editar fornecedor' : 'Novo fornecedor'}}</h1></section>
+@if (error()) { <div class="alert error" role="alert">{{error()}}</div> }
+@if (loading()) { <div class="loading-state">Carregando fornecedor...</div> }
+@else if (!loadFailed()) {
+<form class="form-panel" [formGroup]="form" (ngSubmit)="save()">
+<div class="form-grid two-columns">
+<div class="field"><label for="cnpj">CNPJ</label><input id="cnpj" formControlName="cnpj" maxlength="14" placeholder="Sem pontuação" />
+@if (form.controls.cnpj.touched && form.controls.cnpj.invalid) { <small class="field-error">Informe 14 caracteres, sem pontuação, com os dois últimos numéricos.</small> }</div>
+<div class="field"><label for="nome">Razão social</label><input id="nome" type="text" formControlName="nome" maxlength="120" />
+@if (form.controls.nome.touched && form.controls.nome.invalid) { <small class="field-error">Informe uma razão social válida.</small> }</div>
+<div class="field"><label for="email">E-mail</label><input id="email" type="email" formControlName="email" maxlength="160" />
+@if (form.controls.email.touched && form.controls.email.invalid) { <small class="field-error">Informe e-mail válido.</small> }</div>
+<div class="field"><label for="telefone">Telefone com DDD</label><input id="telefone" type="tel" formControlName="telefone" maxlength="11" />
+@if (form.controls.telefone.touched && form.controls.telefone.invalid) { <small class="field-error">Informe um telefone com DDD (10 ou 11 dígitos).</small> }</div>
+<div class="field"><label for="cep">CEP</label><input id="cep" formControlName="cep" maxlength="9" inputmode="numeric" placeholder="00000-000" />
+@if (form.controls.cep.touched && form.controls.cep.invalid) { <small class="field-error">Informe um CEP com 8 dígitos.</small> }
+<button type="button" class="btn btn-secondary" (click)="consultar()" [disabled]="consulting() || form.controls.cep.invalid">{{consulting() ? 'Consultando...' : 'Consultar CEP'}}</button>
+@if (cepError()) { <small class="field-error" role="alert">{{cepError()}}</small> }
+</div>
+<div class="field"><label for="municipio">Município</label><input id="municipio" [value]="city()" readonly /></div>
+<div class="field"><label for="uf">Estado (UF)</label><input id="uf" [value]="uf()" readonly /></div>
+<div class="field"><label for="logradouro">Logradouro</label><input id="logradouro" type="text" formControlName="logradouro" maxlength="160" />
+@if (form.controls.logradouro.touched && form.controls.logradouro.invalid) { <small class="field-error">Informe logradouro válido.</small> }</div>
+<div class="field"><label for="bairro">Bairro</label><input id="bairro" type="text" formControlName="bairro" maxlength="100" />
+@if (form.controls.bairro.touched && form.controls.bairro.invalid) { <small class="field-error">Informe bairro válido.</small> }</div>
+<div class="field"><label for="numero">Número</label><input id="numero" type="text" formControlName="numero" maxlength="20" />
+@if (form.controls.numero.touched && form.controls.numero.invalid) { <small class="field-error">Informe número válido.</small> }</div>
+<div class="field"><label for="complemento">Complemento</label><input id="complemento" type="text" formControlName="complemento" maxlength="100" />
+@if (form.controls.complemento.touched && form.controls.complemento.invalid) { <small class="field-error">Informe complemento válido.</small> }</div>
+<section class="full-field">
+@for (control of extras.controls; track control; let i = $index) {
+  <div class="field">
+    <label [for]="'telefone-extra-' + i">Telefone adicional {{i + 1}}</label>
+    <div class="actions"><input [id]="'telefone-extra-' + i" type="tel" [formControl]="control" maxlength="11" />
+    <button class="icon-button danger" type="button" title="Remover telefone" (click)="removerTelefone(i)"><img src="icons/trash-2.svg" alt="Remover telefone" /></button></div>
+    @if (control.touched && control.invalid) { <small class="field-error">Informe 10 ou 11 dígitos, com DDD.</small> }
+  </div>
+}
+<button class="btn btn-secondary" type="button" [disabled]="extras.length >= 4" (click)="adicionarTelefone()"><img src="icons/plus.svg" alt="" />Adicionar telefone</button>
+</section>
+<div class="checkbox-field full-field"><input id="ativo" type="checkbox" formControlName="ativo" /><label for="ativo">Fornecedor ativo</label></div>
+</div>
+<div class="form-actions"><a class="btn btn-secondary" routerLink="/admin/fornecedores">Cancelar</a><button class="btn btn-primary" type="submit" [disabled]="saving() || consulting() || !confirmed()"><img src="icons/save.svg" alt="" />{{saving() ? 'Salvando...' : 'Salvar fornecedor'}}</button></div>
+</form> }

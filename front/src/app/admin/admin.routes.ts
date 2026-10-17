@@ -1,6 +1,9 @@
 import { Routes } from '@angular/router';
 
 export const adminRoutes: Routes = [
+  { path: 'fornecedores', loadComponent: () => import('../fornecedores/fornecedor-lista').then(m => m.FornecedorLista) },
+  { path: 'fornecedores/novo', loadComponent: () => import('../fornecedores/fornecedor-formulario').then(m => m.FornecedorFormulario) },
+  { path: 'fornecedores/editar/:id', loadComponent: () => import('../fornecedores/fornecedor-formulario').then(m => m.FornecedorFormulario) },
   {
     path: 'usuarios',
     loadComponent: () => import('../usuarios/usuario-lista').then((m) => m.UsuarioLista),
