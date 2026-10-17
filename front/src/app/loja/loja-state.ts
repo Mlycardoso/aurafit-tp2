@@ -6,7 +6,6 @@ export interface CartItem {
   quantity: number;
 }
 export interface ShopProduct extends Produto {
-  marca?: { nome: string };
   sabor?: string;
   peso?: string;
   imagemUrl?: string;

@@ -31,5 +31,8 @@ public record ProdutoDTO(
         Boolean ativo,
 
         @NotNull(message = "A categoria deve ser informada.")
-        Long idCategoria) {
+        Long idCategoria,
+
+        @Min(value = 1, message = "A marca deve ser valida.")
+        Long idMarca) {
 }

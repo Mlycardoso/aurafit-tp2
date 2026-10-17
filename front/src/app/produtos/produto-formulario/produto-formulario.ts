@@ -5,6 +5,8 @@ import { forkJoin, of } from 'rxjs';
 
 import { Categoria } from '../../categorias/categoria.model';
 import { CategoriaService } from '../../categorias/categoria.service';
+import { Marca } from '../../marcas/marca.model';
+import { MarcaService } from '../../marcas/marca.service';
 import { getApiError } from '../../shared/api-error';
 import { ProdutoPayload } from '../produto.model';
 import { ProdutoService } from '../produto.service';
@@ -20,6 +22,8 @@ export class ProdutoFormulario {
   private readonly router = inject(Router);
   private readonly service = inject(ProdutoService);
   private readonly categoriaService = inject(CategoriaService);
+  private readonly marcaService = inject(MarcaService);
+  protected readonly marcas = signal<Marca[]>([]);
 
   protected readonly id = Number(this.route.snapshot.paramMap.get('id')) || null;
   protected readonly categorias = signal<Categoria[]>([]);
@@ -33,15 +37,18 @@ export class ProdutoFormulario {
     preco: [0, [Validators.required, Validators.min(0.01), Validators.max(99999999.99), Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
     estoque: [0, [Validators.required, Validators.min(0), Validators.pattern(/^\d+$/)]],
     idCategoria: [0, [Validators.required, Validators.min(1)]],
+    idMarca: [0],
     ativo: [true],
   });
 
   constructor() {
     forkJoin({
       categorias: this.categoriaService.findAll(),
+      marcas: this.marcaService.findAll(),
       produto: this.id ? this.service.findById(this.id) : of(null)
     }).subscribe({
-        next: ({categorias, produto}) => {
+        next: ({categorias, marcas, produto}) => {
+          this.marcas.set(marcas);
           this.categorias.set(categorias);
           if (produto) {
           this.form.patchValue({
@@ -50,6 +57,7 @@ export class ProdutoFormulario {
             preco: produto.preco,
             estoque: produto.estoque,
             idCategoria: produto.categoria.id,
+            idMarca: produto.marca?.id ?? 0,
             ativo: produto.ativo,
           });
           }
@@ -77,6 +85,7 @@ export class ProdutoFormulario {
       preco: Number(value.preco),
       estoque: Number(value.estoque),
       idCategoria: Number(value.idCategoria),
+      idMarca: Number(value.idMarca) || null,
       ativo: value.ativo,
     };
     const request = this.id ? this.service.update(this.id, payload) : this.service.create(payload);

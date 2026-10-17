@@ -27,11 +27,12 @@
     <div class="empty-state">Nenhum produto encontrado.</div>
   } @else {
     <table class="product-table">
-      <thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Situação</th><th aria-label="Ações"></th></tr></thead>
+      <thead><tr><th>Produto</th><th>Marca</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Situação</th><th aria-label="Ações"></th></tr></thead>
       <tbody>
         @for (item of items(); track item.id) {
           <tr>
             <td class="entity-name">{{ item.nome }}</td>
+            <td>{{ item.marca?.nome || 'Não informada' }}</td>
             <td>{{ item.categoria.nome }}</td>
             <td>{{ item.preco | currency: 'BRL' }}</td>
             <td>{{ item.estoque }} un.</td>

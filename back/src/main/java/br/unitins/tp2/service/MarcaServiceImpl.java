@@ -17,6 +17,9 @@ public class MarcaServiceImpl implements MarcaService {
     @Inject
     MarcaRepository repository;
 
+    @Inject
+    br.unitins.tp2.repository.ProdutoRepository produtoRepository;
+
     @Override
     @Transactional
     public Marca create(MarcaDTO dto) {
@@ -39,6 +42,9 @@ public class MarcaServiceImpl implements MarcaService {
     @Override
     @Transactional
     public void delete(long id) {
+        if (produtoRepository.count("marca.id", id) > 0) {
+            throw ValidationException.of("id", "A marca possui produtos vinculados.");
+        }
         if (!repository.deleteById(id)) {
             throw new NotFoundException("Marca nao encontrada.");
         }

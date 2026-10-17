@@ -17,7 +17,6 @@ Nao publique a API administrativa na internet antes de implementar autorizacao.
 ## Dependencias pendentes
 
 - Autenticacao, sessao e autorizacao; sincronizacao de favoritos por conta.
-- Marca associada ao produto (hoje o cadastro de marcas e independente).
 - Campos estruturados de sabor e peso; atualmente extraidos do nome quando presentes.
 - Familia de produto e variacoes: as opcoes exibidas sao outros cadastros da mesma categoria,
   nao SKUs com variacoes garantidas pelo backend.

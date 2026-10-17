@@ -11,7 +11,8 @@ public record ProdutoResponseDTO(
         BigDecimal preco,
         Integer estoque,
         Boolean ativo,
-        CategoriaResponseDTO categoria) {
+        CategoriaResponseDTO categoria,
+        MarcaResponseDTO marca) {
 
     public static ProdutoResponseDTO valueOf(Produto produto) {
         return new ProdutoResponseDTO(
@@ -21,6 +22,7 @@ public record ProdutoResponseDTO(
                 produto.getPreco(),
                 produto.getEstoque(),
                 produto.getAtivo(),
-                CategoriaResponseDTO.valueOf(produto.getCategoria()));
+                CategoriaResponseDTO.valueOf(produto.getCategoria()),
+                produto.getMarca() == null ? null : MarcaResponseDTO.valueOf(produto.getMarca()));
     }
 }

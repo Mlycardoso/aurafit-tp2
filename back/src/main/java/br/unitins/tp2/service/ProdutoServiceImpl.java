@@ -22,6 +22,9 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Inject
     CategoriaRepository categoriaRepository;
 
+    @Inject
+    br.unitins.tp2.repository.MarcaRepository marcaRepository;
+
     @Override
     @Transactional
     public Produto create(ProdutoDTO dto) {
@@ -88,6 +91,15 @@ public class ProdutoServiceImpl implements ProdutoService {
         produto.setEstoque(dto.estoque());
         produto.setAtivo(dto.ativo());
         produto.setCategoria(findCategoria(dto.idCategoria()));
+        if (dto.idMarca() == null) {
+            produto.setMarca(null);
+        } else {
+            var marca = marcaRepository.findById(dto.idMarca());
+            if (marca == null) {
+                throw ValidationException.of("idMarca", "Marca nao encontrada.");
+            }
+            produto.setMarca(marca);
+        }
     }
 
     private Categoria findCategoria(Long idCategoria) {

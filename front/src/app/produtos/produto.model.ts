@@ -1,4 +1,5 @@
 import { Categoria } from '../categorias/categoria.model';
+import { Marca } from '../marcas/marca.model';
 
 export interface Produto {
   id: number;
@@ -8,6 +9,7 @@ export interface Produto {
   estoque: number;
   ativo: boolean;
   categoria: Categoria;
+  marca?: Marca | null;
 }
 
 export interface ProdutoPayload {
@@ -17,4 +19,5 @@ export interface ProdutoPayload {
   estoque: number;
   ativo: boolean;
   idCategoria: number;
+  idMarca?: number | null;
 }

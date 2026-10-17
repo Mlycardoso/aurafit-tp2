@@ -79,4 +79,39 @@ class AdministrativoResourceTest {
                     .then().statusCode(400);
         }
     }
+
+    @Test
+    void deveVincularTrocarRemoverMarcaEProtegerExclusao() {
+        int marca = given().contentType("application/json").body(cadastro("Marca " + UUID.randomUUID()))
+                .post("/marcas").then().statusCode(201).extract().path("id");
+        int outraMarca = given().contentType("application/json").body(cadastro("Marca " + UUID.randomUUID()))
+                .post("/marcas").then().statusCode(201).extract().path("id");
+        int categoria = given().contentType("application/json").body(cadastro("Categoria " + UUID.randomUUID()))
+                .post("/categorias").then().statusCode(201).extract().path("id");
+        Integer id = null;
+        try {
+            var dto = cadastro("Whey " + UUID.randomUUID());
+            dto.put("preco", 99.90);
+            dto.put("estoque", 10);
+            dto.put("idCategoria", categoria);
+            dto.put("idMarca", 99999999);
+            given().contentType("application/json").body(dto).post("/produtos").then().statusCode(400);
+            dto.put("idMarca", marca);
+            id = given().contentType("application/json").body(dto).post("/produtos")
+                    .then().statusCode(201).body("marca.id", is(marca)).extract().path("id");
+            given().get("/produtos/" + id).then().statusCode(200).body("marca.id", is(marca));
+            given().delete("/marcas/" + marca).then().statusCode(400);
+            dto.put("idMarca", outraMarca);
+            given().contentType("application/json").body(dto).put("/produtos/" + id)
+                    .then().statusCode(200).body("marca.id", is(outraMarca));
+            dto.put("idMarca", null);
+            given().contentType("application/json").body(dto).put("/produtos/" + id)
+                    .then().statusCode(200).body("marca", nullValue());
+        } finally {
+            if (id != null) given().delete("/produtos/" + id).then().statusCode(204);
+            given().delete("/marcas/" + marca).then().statusCode(204);
+            given().delete("/marcas/" + outraMarca).then().statusCode(204);
+            given().delete("/categorias/" + categoria).then().statusCode(204);
+        }
+    }
 }

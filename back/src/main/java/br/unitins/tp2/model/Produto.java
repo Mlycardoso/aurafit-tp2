@@ -29,6 +29,14 @@ public class Produto extends DefaultEntity {
     @JoinColumn(name = "id_categoria", nullable = false)
     private Categoria categoria;
 
+    @ManyToOne
+    @JoinColumn(name = "id_marca")
+    private Marca marca;
+
+    public Marca getMarca() { return marca; }
+
+    public void setMarca(Marca marca) { this.marca = marca; }
+
     public String getNome() {
         return nome;
     }

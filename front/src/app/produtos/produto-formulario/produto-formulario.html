@@ -38,6 +38,18 @@
           }
         </div>
         <div class="field">
+          <label for="marca">Marca (opcional)</label>
+          <select id="marca" formControlName="idMarca">
+            <option [ngValue]="0">Sem marca informada</option>
+            @for (marca of marcas(); track marca.id) {
+              <option [ngValue]="marca.id">{{ marca.nome }}{{ marca.ativo ? '' : ' (inativa)' }}</option>
+            }
+          </select>
+          @if (marcas().length === 0) {
+            <small>Nenhuma marca cadastrada.</small>
+          }
+        </div>
+        <div class="field">
           <label for="preco">Preço</label>
           <input id="preco" type="number" formControlName="preco" min="0.01" step="0.01" />
           @if (form.controls.preco.touched && form.controls.preco.invalid) {
