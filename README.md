@@ -26,7 +26,8 @@ A identidade visual combina rosa, verde-menta e superfícies claras, com foco na
 
 - Gestão de produtos, categorias, marcas, clientes e usuários.
 - Pesquisa por nome, paginação e edição dos cadastros.
-- Produtos vinculados a categorias, com controle cadastral de preço, estoque e situação.
+- Produtos vinculados a categorias, marcas e fornecedores, com preço, estoque, SKU único, sabor e peso em gramas.
+- Inativação e reativação de produtos, preservando os cadastros e seus vínculos.
 - Consulta de endereço por CEP, com município e estado estruturados.
 - Validações no front-end e no back-end.
 - Cadastro de perfis de usuário, ainda sem autenticação de acesso.

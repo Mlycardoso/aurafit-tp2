@@ -6,7 +6,7 @@ export interface CartItem {
   quantity: number;
 }
 export interface ShopProduct extends Produto {
-  sabor?: string;
+  sabor?: string | null;
   peso?: string;
   imagemUrl?: string;
 }
@@ -14,7 +14,7 @@ export function flavor(p: ShopProduct): string {
   return p.sabor || p.nome.match(/chocolate|baunilha|morango|natural/i)?.[0] || '';
 }
 export function weight(p: ShopProduct): string {
-  return p.peso || p.nome.match(/\d+(?:[.,]\d+)?\s*(?:kg|g)\b/i)?.[0] || '';
+  return p.pesoGramas ? `${p.pesoGramas} g` : p.peso || p.nome.match(/\d+(?:[.,]\d+)?\s*(?:kg|g)\b/i)?.[0] || '';
 }
 export function readStored(key: string): unknown {
   try {

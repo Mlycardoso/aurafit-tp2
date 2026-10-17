@@ -50,6 +50,8 @@ describe('LojaState', () => {
   it('extrai apenas sabor e peso presentes no cadastro', () => {
     expect(flavor(product)).toBe('Chocolate');
     expect(weight(product)).toBe('900g');
+    expect(weight({...product, pesoGramas: 1800})).toBe('1800 g');
+    expect(flavor({...product, sabor: 'Baunilha'})).toBe('Baunilha');
     expect(flavor({ ...product, nome: 'Whey' })).toBe('');
   });
 });

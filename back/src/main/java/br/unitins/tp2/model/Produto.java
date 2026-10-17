@@ -17,6 +17,19 @@ public class Produto extends DefaultEntity {
     @Column(length = 80, nullable = false, unique = true)
     private String nome;
 
+    @Column(length = 40, unique = true)
+    private String sku;
+    @Column(length = 60)
+    private String sabor;
+    private Integer pesoGramas;
+
+    public String getSku() { return sku; }
+    public void setSku(String sku) { this.sku = sku; }
+    public String getSabor() { return sabor; }
+    public void setSabor(String sabor) { this.sabor = sabor; }
+    public Integer getPesoGramas() { return pesoGramas; }
+    public void setPesoGramas(Integer pesoGramas) { this.pesoGramas = pesoGramas; }
+
     @Column(length = 255)
     private String descricao;
 

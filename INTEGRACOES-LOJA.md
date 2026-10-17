@@ -17,7 +17,7 @@ Nao publique a API administrativa na internet antes de implementar autorizacao.
 ## Dependencias pendentes
 
 - Autenticacao, sessao e autorizacao; sincronizacao de favoritos por conta.
-- Campos estruturados de sabor e peso; atualmente extraidos do nome quando presentes.
+
 - Familia de produto e variacoes: as opcoes exibidas sao outros cadastros da mesma categoria,
   nao SKUs com variacoes garantidas pelo backend.
 - Upload de fotos, galeria e informacao nutricional por produto.
@@ -26,3 +26,10 @@ Nao publique a API administrativa na internet antes de implementar autorizacao.
 As imagens whey-hero.png e whey-pouch.png foram geradas para esta composicao.
 Sao ilustrativas, nao fotografias das mercadorias. A logo existente foi preservada.
 Nao ha precos promocionais, avaliacoes, frete ou pagamentos ficticios.
+
+## Cadastro de produtos
+
+- SKU único (gerado ao salvar se não informado), sabor e peso líquido em gramas.
+- Cadastros antigos podem ser complementados na edição; a loja prioriza os campos estruturados e mantém a leitura do nome como compatibilidade.
+- Inativação preserva o registro, estoque e vínculos. Reativação pela edição.
+- PATCH /produtos/{id}/inativar e o DELETE legado apenas inativam, sem exclusão física.

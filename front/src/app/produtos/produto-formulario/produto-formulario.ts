@@ -36,6 +36,9 @@ export class ProdutoFormulario {
   protected readonly loadFailed = signal(false);
   protected readonly form = this.fb.nonNullable.group({
     nome: ['', [Validators.required, Validators.pattern(/\S/), Validators.minLength(2), Validators.maxLength(80)]],
+    sku: ['', [Validators.maxLength(40), Validators.pattern(/^[A-Za-z0-9_-]+$/)]],
+    sabor: ['', Validators.maxLength(60)],
+    pesoGramas: this.fb.control<number | null>(null, [Validators.min(1), Validators.max(2147483647), Validators.pattern(/^\d+$/)]),
     descricao: ['', [Validators.maxLength(255)]],
     preco: [0, [Validators.required, Validators.min(0.01), Validators.max(99999999.99), Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
     estoque: [0, [Validators.required, Validators.min(0), Validators.pattern(/^\d+$/)]],
@@ -58,6 +61,7 @@ export class ProdutoFormulario {
           this.categorias.set(categorias);
           if (produto) {
           this.form.patchValue({
+            sku: produto.sku ?? '', sabor: produto.sabor ?? '', pesoGramas: produto.pesoGramas ?? null,
             nome: produto.nome,
             descricao: produto.descricao ?? '',
             preco: produto.preco,
@@ -87,6 +91,8 @@ export class ProdutoFormulario {
 
     const value = this.form.getRawValue();
     const payload: ProdutoPayload = {
+      sku: value.sku.trim().toUpperCase() || null, sabor: value.sabor.trim() || null,
+      pesoGramas: value.pesoGramas == null ? null : Number(value.pesoGramas),
       nome: value.nome.trim(),
       descricao: value.descricao.trim() || null,
       preco: Number(value.preco),

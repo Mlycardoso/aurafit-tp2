@@ -66,7 +66,7 @@ class AdministrativoResourceTest {
             produto.put("idCategoria", 99999999);
             given().contentType("application/json").body(produto).post("/produtos").then().statusCode(400);
         } finally {
-            if (produtoId != null) given().delete("/produtos/" + produtoId).then().statusCode(204);
+            if (produtoId != null) ProdutoTestCleanup.remover(produtoId);
             given().delete("/categorias/" + categoriaId).then().statusCode(204);
         }
         given().get("/categorias/" + categoriaId).then().statusCode(404);
@@ -108,7 +108,7 @@ class AdministrativoResourceTest {
             given().contentType("application/json").body(dto).put("/produtos/" + id)
                     .then().statusCode(200).body("marca", nullValue());
         } finally {
-            if (id != null) given().delete("/produtos/" + id).then().statusCode(204);
+            if (id != null) ProdutoTestCleanup.remover(id);
             given().delete("/marcas/" + marca).then().statusCode(204);
             given().delete("/marcas/" + outraMarca).then().statusCode(204);
             given().delete("/categorias/" + categoria).then().statusCode(204);

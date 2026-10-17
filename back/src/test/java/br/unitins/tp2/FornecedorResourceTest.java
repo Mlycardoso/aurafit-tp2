@@ -90,7 +90,7 @@ class FornecedorResourceTest {
             given().contentType("application/json").body(dto).put("/produtos/" + produto)
                     .then().statusCode(200).body("fornecedores", empty());
         } finally {
-            if (produto != null) given().delete("/produtos/" + produto).then().statusCode(204);
+            if (produto != null) ProdutoTestCleanup.remover(produto);
             given().delete("/fornecedores/" + fornecedor).then().statusCode(204);
             given().delete("/fornecedores/" + outro).then().statusCode(204);
             given().delete("/categorias/" + categoria).then().statusCode(204);

@@ -28,7 +28,7 @@ export class ProdutoService {
     return this.http.put<Produto>(`${this.url}/${id}`, payload);
   }
 
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.url}/${id}`);
+  inativar(id: number): Observable<void> {
+    return this.http.patch<void>(`${this.url}/${id}/inativar`, {});
   }
 }

@@ -67,14 +67,18 @@ export class ProdutoLista {
     if (this.page() + 1 < this.totalPages()) this.load(this.search(), this.page() + 1);
   }
 
-  protected remove(item: Produto): void {
-    if (!confirm(`Excluir o produto "${item.nome}"?`)) return;
-    this.service.delete(item.id).subscribe({
+  protected readonly inativando = signal<number | null>(null);
+
+  protected inativar(item: Produto): void {
+    if (this.inativando() !== null || !item.ativo) return;
+    if (!confirm(`Inativar o produto "${item.nome}"? Ele sairá da loja e continuará no histórico.`)) return;
+    this.inativando.set(item.id);
+    this.service.inativar(item.id).subscribe({
       next: () => {
-        const targetPage = this.items().length === 1 && this.page() > 0 ? this.page() - 1 : this.page();
-        this.load(this.search(), targetPage);
+        this.inativando.set(null);
+        this.load();
       },
-      error: (error) => this.error.set(getApiError(error)),
+      error: (error) => { this.inativando.set(null); this.error.set(getApiError(error)); },
     });
   }
 }

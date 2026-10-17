@@ -32,6 +32,7 @@
         @for (item of items(); track item.id) {
           <tr>
             <td class="entity-name">{{ item.nome }}
+              <div><small>{{ item.sku || 'Código gerado ao salvar' }} · {{ item.sabor || 'Sabor não informado' }} · {{ item.pesoGramas ? item.pesoGramas + ' g' : 'Peso não informado' }}</small></div>
               @for (fornecedor of item.fornecedores; track fornecedor.id) {
                 <div><small>{{ fornecedor.nome }}</small></div>
               }
@@ -44,7 +45,7 @@
             <td>
               <div class="actions">
                 <a class="icon-button" [routerLink]="['/admin/produtos/editar', item.id]" title="Editar produto"><img src="icons/pencil.svg" alt="Editar" /></a>
-                <button class="icon-button danger" type="button" title="Excluir produto" (click)="remove(item)"><img src="icons/trash-2.svg" alt="Excluir" /></button>
+                <button class="btn btn-secondary" type="button" title="Inativar produto" [disabled]="!item.ativo || inativando() !== null" (click)="inativar(item)">Inativar</button>
               </div>
             </td>
           </tr>

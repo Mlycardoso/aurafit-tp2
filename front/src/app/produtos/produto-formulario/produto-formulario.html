@@ -25,6 +25,18 @@
             <small class="field-error">Informe um nome entre 2 e 80 caracteres.</small>
           }
         </div>
+        <div class="field"><label for="sku">Código do produto (SKU)</label>
+          <input id="sku" formControlName="sku" maxlength="40" placeholder="Ex.: WHEY-CHOC-900" />
+          <small>Único por produto. Em branco, será gerado ao salvar.</small>
+          @if (form.controls.sku.touched && form.controls.sku.invalid) { <small class="field-error">Use até 40 letras, números, hífens ou sublinhados.</small> }
+        </div>
+        <div class="field"><label for="pesoGramas">Peso líquido (g)</label>
+          <input id="pesoGramas" type="number" formControlName="pesoGramas" min="1" max="2147483647" step="1" placeholder="Ex.: 900" />
+          @if (form.controls.pesoGramas.touched && form.controls.pesoGramas.invalid) { <small class="field-error">Informe um peso inteiro e positivo em gramas.</small> }
+        </div>
+        <div class="field"><label for="sabor">Sabor</label>
+          <input id="sabor" formControlName="sabor" maxlength="60" placeholder="Ex.: Chocolate ou Sem sabor" />
+        </div>
         <div class="field">
           <label for="categoria">Categoria</label>
           <select id="categoria" formControlName="idCategoria">
@@ -84,7 +96,7 @@
         </fieldset>
         <div class="checkbox-field full-field">
           <input id="ativo" type="checkbox" formControlName="ativo" />
-          <label for="ativo">Produto ativo no catálogo</label>
+          <label for="ativo">Produto ativo no catálogo (desmarque para inativar; marque para reativar)</label>
         </div>
       </div>
       <div class="form-actions">

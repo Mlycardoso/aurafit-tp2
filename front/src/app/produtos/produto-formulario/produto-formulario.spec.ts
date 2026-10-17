@@ -18,7 +18,7 @@ describe('Marca do produto', () => {
           provideRouter([]),
           { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: '1' }) } } },
           { provide: ProdutoService, useValue: {
-            findById: () => of({ nome: 'Whey exemplo', preco: 99, estoque: 2, ativo: true, categoria: { id: 1 }, marca }),
+            findById: () => of({ sku: 'WHEY-900', sabor: 'Chocolate', pesoGramas: 900, nome: 'Whey exemplo', preco: 99, estoque: 2, ativo: true, categoria: { id: 1 }, marca }),
             update,
           } },
           { provide: MarcaService, useValue: { findAll: () => of(marca ? [marca] : []) } },
@@ -29,13 +29,16 @@ describe('Marca do produto', () => {
       vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
       const fixture = TestBed.createComponent(ProdutoFormulario);
       await fixture.whenStable();
+      expect(fixture.nativeElement.querySelector('#sku').value).toBe('WHEY-900');
+      expect(fixture.nativeElement.querySelector('#sabor').value).toBe('Chocolate');
+      expect(fixture.nativeElement.querySelector('#pesoGramas').value).toBe('900');
       const select = fixture.nativeElement.querySelector('#marca') as HTMLSelectElement;
       expect(select.selectedOptions[0].textContent).toContain(marca?.nome ?? 'Sem marca informada');
       const fornecedor = fixture.nativeElement.querySelector('#fornecedor-5') as HTMLInputElement;
       fornecedor.checked = true;
       fornecedor.dispatchEvent(new Event('change'));
       fixture.nativeElement.querySelector('form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-      expect(update).toHaveBeenCalledWith(1, expect.objectContaining({ idMarca: marca?.id ?? null, idsFornecedores: [5] }));
+      expect(update).toHaveBeenCalledWith(1, expect.objectContaining({ idMarca: marca?.id ?? null, idsFornecedores: [5], sku: 'WHEY-900', sabor: 'Chocolate', pesoGramas: 900 }));
     });
   }
 });

@@ -67,6 +67,14 @@ public class ProdutoResource {
         return ProdutoResponseDTO.valueOf(service.update(id, dto));
     }
 
+    @jakarta.ws.rs.PATCH
+    @Path("/{id}/inativar")
+    public Response inativar(@PathParam("id") long id) {
+        service.delete(id);
+        return Response.noContent().build();
+    }
+
+    // Compatibilidade: DELETE também apenas inativa, preservando o histórico.
     @DELETE
     @Path("/{id}")
     public Response delete(@PathParam("id") long id) {

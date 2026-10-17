@@ -36,5 +36,8 @@ public record ProdutoDTO(
         @Min(value = 1, message = "A marca deve ser valida.")
         Long idMarca,
 
-        java.util.List<@NotNull @Min(1) Long> idsFornecedores) {
+        java.util.List<@NotNull @Min(1) Long> idsFornecedores,
+        @jakarta.validation.constraints.Pattern(regexp = "[A-Za-z0-9_-]{1,40}", message = "O codigo deve ter ate 40 letras, numeros, hifens ou sublinhados.") String sku,
+        @Length(max = 60) String sabor,
+        @Min(value = 1, message = "O peso deve ser maior que zero, em gramas.") Integer pesoGramas) {
 }

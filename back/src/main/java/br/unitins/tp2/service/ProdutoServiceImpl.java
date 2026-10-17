@@ -50,9 +50,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Override
     @Transactional
     public void delete(long id) {
-        if (!repository.deleteById(id)) {
-            throw new NotFoundException("Produto nao encontrado.");
-        }
+        findById(id).setAtivo(false);
     }
 
     @Override
@@ -82,6 +80,11 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     private void validate(ProdutoDTO dto, Long id) {
+        if (dto.sku() != null) {
+            Produto existente = repository.find("upper(sku)", dto.sku().toUpperCase(java.util.Locale.ROOT)).firstResult();
+            if (existente != null && !existente.getId().equals(id))
+                throw ValidationException.of("sku", "Ja existe um produto com este codigo.");
+        }
         if (repository.findByNomeExceptId(dto.nome().trim(), id) != null) {
             throw ValidationException.of("nome", "Ja existe um produto cadastrado com esse nome.");
         }
@@ -98,6 +101,10 @@ public class ProdutoServiceImpl implements ProdutoService {
             produto.getFornecedores().clear();
             produto.getFornecedores().addAll(fornecedores);
         }
+        if (dto.sku() != null) produto.setSku(dto.sku().toUpperCase(java.util.Locale.ROOT));
+        if (produto.getSku() == null) produto.setSku("AF-" + java.util.UUID.randomUUID().toString().replace("-", "").toUpperCase(java.util.Locale.ROOT));
+        produto.setSabor(normalize(dto.sabor()));
+        produto.setPesoGramas(dto.pesoGramas());
         produto.setNome(dto.nome().trim());
         produto.setDescricao(normalize(dto.descricao()));
         produto.setPreco(dto.preco());
