@@ -8,6 +8,12 @@
   </div>
 </section>
 
+@if (id && !loading() && !loadFailed()) {
+  <app-produto-imagem [produtoId]="id" [inicial]="imagemUrl()" />
+} @else if (!id) {
+  <p>Salve o produto para adicionar sua imagem.</p>
+}
+
 @if (error()) {
   <div class="alert error"><img src="icons/triangle-alert.svg" alt="" />{{ error() }}</div>
 }

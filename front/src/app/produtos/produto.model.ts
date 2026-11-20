@@ -3,6 +3,7 @@ import { Marca } from '../marcas/marca.model';
 
 export interface Produto {
   id: number;
+  imagemUrl?: string | null;
   sku?: string | null;
   sabor?: string | null;
   pesoGramas?: number | null;

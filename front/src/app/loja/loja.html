@@ -183,7 +183,8 @@
                     <a [routerLink]="['/loja/produto', p.id]" [attr.aria-label]="'Ver ' + p.nome"
                       ><img
                         [src]="image(p)"
-                        [alt]="p.imagemUrl ? p.nome : 'Embalagem ilustrativa de whey'"
+                        [alt]="temImagem(p) ? p.nome : 'Embalagem ilustrativa de whey'"
+                        (error)="imagemFalhou(p)"
                         loading="lazy"
                     /></a>
                     <button
@@ -199,7 +200,7 @@
                     >
                       <img src="/icons/heart.svg" alt="" />
                     </button>
-                    @if (!p.imagemUrl) {
+                    @if (!temImagem(p)) {
                       <small>Imagem ilustrativa</small>
                     }
                   </div>
@@ -252,11 +253,12 @@
             <figure class="detail-photo">
               <img
                 [src]="image(p)"
-                [alt]="p.imagemUrl ? p.nome : 'Embalagem ilustrativa de whey'"
+                [alt]="temImagem(p) ? p.nome : 'Embalagem ilustrativa de whey'"
+                (error)="imagemFalhou(p)"
               />
               <figcaption>
                 {{
-                  p.imagemUrl ? p.nome : 'Imagem ilustrativa. A embalagem real pode ser diferente.'
+                  temImagem(p) ? p.nome : 'Imagem ilustrativa. A embalagem real pode ser diferente.'
                 }}
               </figcaption>
             </figure>
@@ -367,7 +369,7 @@
               @for (row of rows(); track row.id) {
                 <article class="cart-row">
                   @if (row.product; as p) {
-                    <img class="cart-photo" [src]="image(p)" alt="Embalagem ilustrativa" />
+                    <img class="cart-photo" [src]="image(p)" [alt]="temImagem(p) ? p.nome : 'Embalagem ilustrativa'" (error)="imagemFalhou(p)" />
                     <div class="cart-info">
                       <a [routerLink]="['/loja/produto', p.id]">{{ p.nome }}</a
                       ><small>{{ p.categoria.nome }}</small

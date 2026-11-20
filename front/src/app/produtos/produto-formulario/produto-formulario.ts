@@ -11,10 +11,11 @@ import { Fornecedor, FornecedorService } from '../../fornecedores/fornecedor.ser
 import { getApiError } from '../../shared/api-error';
 import { ProdutoPayload } from '../produto.model';
 import { ProdutoService } from '../produto.service';
+import { ProdutoImagem } from '../produto-imagem';
 
 @Component({
   selector: 'app-produto-formulario',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, ProdutoImagem],
   templateUrl: './produto-formulario.html',
 })
 export class ProdutoFormulario {
@@ -34,6 +35,7 @@ export class ProdutoFormulario {
   protected readonly loading = signal(true);
   protected readonly error = signal('');
   protected readonly loadFailed = signal(false);
+  protected readonly imagemUrl = signal<string | null>(null);
   protected readonly form = this.fb.nonNullable.group({
     nome: ['', [Validators.required, Validators.pattern(/\S/), Validators.minLength(2), Validators.maxLength(80)]],
     sku: ['', [Validators.maxLength(40), Validators.pattern(/^[A-Za-z0-9_-]+$/)]],
@@ -60,6 +62,7 @@ export class ProdutoFormulario {
           this.marcas.set(marcas);
           this.categorias.set(categorias);
           if (produto) {
+          this.imagemUrl.set(produto.imagemUrl ?? null);
           this.form.patchValue({
             sku: produto.sku ?? '', sabor: produto.sabor ?? '', pesoGramas: produto.pesoGramas ?? null,
             nome: produto.nome,
@@ -107,7 +110,7 @@ export class ProdutoFormulario {
     this.saving.set(true);
     this.error.set('');
     request.subscribe({
-      next: () => this.router.navigate(['/admin/produtos']),
+      next: produto => this.router.navigate(this.id ? ['/admin/produtos'] : ['/admin/produtos/editar', produto.id]),
       error: (error) => {
         this.error.set(getApiError(error));
         this.saving.set(false);

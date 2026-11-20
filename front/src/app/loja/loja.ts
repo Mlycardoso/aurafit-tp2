@@ -25,6 +25,7 @@ export class Loja {
   readonly products = signal<ShopProduct[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
+  readonly imagensIndisponiveis = signal<number[]>([]);
   readonly query = signal('');
   readonly category = signal('');
   readonly brand = signal('');
@@ -184,7 +185,16 @@ export class Loja {
     this.page.set(1);
   }
   image(p: ShopProduct): string {
-    return p.imagemUrl || '/whey-pouch.png';
+    return this.temImagem(p) ? p.imagemUrl! : '/whey-pouch.png';
+  }
+
+  temImagem(p: ShopProduct): boolean {
+    return !!p.imagemUrl && !this.imagensIndisponiveis().includes(p.id);
+  }
+
+  imagemFalhou(p: ShopProduct): void {
+    if (!this.imagensIndisponiveis().includes(p.id))
+      this.imagensIndisponiveis.update(ids => [...ids, p.id]);
   }
   selectVariant(id: number): void {
     void this.router.navigate(['/loja/produto', id]);

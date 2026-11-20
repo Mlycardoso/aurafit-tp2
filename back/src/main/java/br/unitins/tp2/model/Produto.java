@@ -12,7 +12,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
+@org.hibernate.annotations.DynamicUpdate
 public class Produto extends DefaultEntity {
+
+    @Column(length = 160)
+    private String imagemChave;
+
+    public String getImagemChave() { return imagemChave; }
+    public void setImagemChave(String imagemChave) { this.imagemChave = imagemChave; }
 
     @Column(length = 80, nullable = false, unique = true)
     private String nome;

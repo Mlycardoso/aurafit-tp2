@@ -1,0 +1,19 @@
+name: aurafit-storage
+services:
+  rustfs:
+    image: rustfs/rustfs:1.0.0-beta.11
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    environment:
+      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY:?Execute iniciar-storage.ps1 primeiro}
+      RUSTFS_SECRET_KEY: ${S3_SECRET_KEY:?Execute iniciar-storage.ps1 primeiro}
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_ADDRESS: ":9000"
+      RUSTFS_CONSOLE_ADDRESS: ":9001"
+    volumes:
+      - imagens:/data
+    command: ["/data"]
+volumes:
+  imagens:

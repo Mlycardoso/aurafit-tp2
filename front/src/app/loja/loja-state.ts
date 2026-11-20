@@ -8,7 +8,7 @@ export interface CartItem {
 export interface ShopProduct extends Produto {
   sabor?: string | null;
   peso?: string;
-  imagemUrl?: string;
+  imagemUrl?: string | null;
 }
 export function flavor(p: ShopProduct): string {
   return p.sabor || p.nome.match(/chocolate|baunilha|morango|natural/i)?.[0] || '';

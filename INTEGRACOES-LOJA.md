@@ -20,7 +20,7 @@ Nao publique a API administrativa na internet antes de implementar autorizacao.
 
 - Familia de produto e variacoes: as opcoes exibidas sao outros cadastros da mesma categoria,
   nao SKUs com variacoes garantidas pelo backend.
-- Upload de fotos, galeria e informacao nutricional por produto.
+- Galeria com múltiplas fotos e informação nutricional por produto.
 - Pedidos, reserva de estoque, cotacao de entrega e provedor de pagamentos.
 
 As imagens whey-hero.png e whey-pouch.png foram geradas para esta composicao.
@@ -28,6 +28,8 @@ Sao ilustrativas, nao fotografias das mercadorias. A logo existente foi preserva
 Nao ha precos promocionais, avaliacoes, frete ou pagamentos ficticios.
 
 ## Cadastro de produtos
+
+- Upload, visualização, download e remoção de uma imagem PNG/JPEG por produto via Quarkus e S3. Configuração e limites em `TRABALHO-05-S3.md`.
 
 - SKU único (gerado ao salvar se não informado), sabor e peso líquido em gramas.
 - Cadastros antigos podem ser complementados na edição; a loja prioriza os campos estruturados e mantém a leitura do nome como compatibilidade.

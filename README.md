@@ -74,6 +74,8 @@ Front-end e back-end são aplicações independentes, mantidas no mesmo reposit�
 
 ## Acesso Local
 
+Para iniciar o armazenamento de imagens e consultar os limites de upload, veja o [guia de Object Storage S3](TRABALHO-05-S3.md).
+
 Com o banco, a API e o front-end em execução:
 
 | Área | Endereço |
