@@ -5,6 +5,6 @@ import jakarta.ws.rs.core.Response;
 
 public class KeycloakException extends WebApplicationException {
     public KeycloakException(int status, String message) {
-        super(message, Response.Status.fromStatusCode(status));
+        super(Response.status(status).entity(message).build());
     }
 }

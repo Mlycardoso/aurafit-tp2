@@ -39,6 +39,10 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = findById(id);
         copiar(usuario, dto.nome(), dto.email(), dto.ativo(), dto.perfis());
         vincular(usuario, dto.idCliente());
+        if (usuario.keycloakId == null) {
+            usuario.keycloakId = keycloak.createUser(dto.nome(), dto.email(),
+                    java.util.UUID.randomUUID().toString() + "Aa1!", true).id();
+        }
         keycloak.updateUser(usuario.keycloakId, dto.nome(), dto.email(), dto.ativo());
         keycloak.setRoles(usuario.keycloakId, dto.perfis().stream().map(Enum::name).toList());
         return usuario;
@@ -75,7 +79,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional
     public void delete(long id) {
         Usuario usuario = findById(id);
-        keycloak.disableUser(usuario.keycloakId);
+        if (usuario.keycloakId != null) keycloak.disableUser(usuario.keycloakId);
         usuario.ativo = false;
     }
 

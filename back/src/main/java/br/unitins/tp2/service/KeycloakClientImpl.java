@@ -31,7 +31,7 @@ public class KeycloakClientImpl implements KeycloakClient {
     @ConfigProperty(name = "keycloak.admin-client-secret") String adminSecret;
     @Inject ObjectMapper mapper;
 
-    private final HttpClient http = HttpClient.newBuilder().build();
+    private final HttpClient http = HttpClient.newBuilder().connectTimeout(java.time.Duration.ofSeconds(5)).build();
 
     private String realmUrl() { return serverUrl.replaceAll("/$", "") + "/realms/" + realm; }
     private String adminUrl() { return serverUrl.replaceAll("/$", "") + "/admin/realms/" + realm; }
@@ -113,6 +113,14 @@ public class KeycloakClientImpl implements KeycloakClient {
     }
 
     @Override public void setRoles(String userId, List<String> roleNames) {
+        List<JsonNode> remove = new ArrayList<>();
+        for (String existing : listUserRoles(userId)) {
+            if ((existing.equals("ADMIN") || existing.equals("CLIENTE")) && !roleNames.contains(existing)) {
+                remove.add(json(send("GET", adminUrl() + "/roles/" + segment(existing), adminToken(), null, null, 200)));
+            }
+        }
+        if (!remove.isEmpty()) send("DELETE", adminUrl() + "/users/" + segment(userId) + "/role-mappings/realm",
+                adminToken(), json(remove), "application/json", 204);
         List<JsonNode> representations = new ArrayList<>();
         for (String role : roleNames) {
             JsonNode json = json(send("GET", adminUrl() + "/roles/" + segment(role), adminToken(), null, null, 200));
@@ -139,7 +147,7 @@ public class KeycloakClientImpl implements KeycloakClient {
 
     private HttpResponse<String> send(String method, String url, String bearer, String body, String contentType, int... expected) {
         try {
-            HttpRequest.Builder request = HttpRequest.newBuilder(URI.create(url)).header("Accept", "application/json");
+            HttpRequest.Builder request = HttpRequest.newBuilder(URI.create(url)).timeout(java.time.Duration.ofSeconds(12)).header("Accept", "application/json");
             if (bearer != null) request.header("Authorization", "Bearer " + bearer);
             if (contentType != null) request.header("Content-Type", contentType);
             request.method(method, body == null ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(body));

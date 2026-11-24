@@ -26,9 +26,25 @@ public class AuthService {
         var tokens = keycloak.login(email.strip().toLowerCase(Locale.ROOT), password);
         var account = keycloak.findUserByEmail(email);
         if (account == null) throw new KeycloakException(401, "Credenciais inválidas.");
+        List<String> roles = keycloak.listUserRoles(account.id());
         Usuario local = usuarios.find("keycloakId", account.id()).firstResult();
+        if (local == null) {
+            local = new Usuario();
+            local.keycloakId = account.id();
+            local.nome = account.name();
+            local.email = account.email();
+            local.ativo = account.enabled();
+            for (String role : roles) if (role.equals("ADMIN") || role.equals("CLIENTE"))
+                local.perfis.add(br.unitins.tp2.model.Perfil.valueOf(role));
+            usuarios.persistAndFlush(local);
+        } else {
+            local.perfis.clear();
+            for (String role : roles) if (role.equals("ADMIN") || role.equals("CLIENTE"))
+                local.perfis.add(br.unitins.tp2.model.Perfil.valueOf(role));
+            local.ativo = account.enabled();
+        }
         return new AuthDTOs.TokenResponse(tokens.accessToken(), tokens.refreshToken(), tokens.expiresIn(),
-                toAuthUser(local, account.name(), account.email(), keycloak.listUserRoles(account.id())));
+                toAuthUser(local, account.name(), account.email(), roles));
     }
 
     public AuthDTOs.TokenResponse refresh(String refreshToken) {
@@ -69,8 +85,9 @@ public class AuthService {
         Usuario local = id == null ? null : usuarios.find("keycloakId", id).firstResult();
         String email = local == null ? null : local.email;
         String name = local == null ? (id == null ? "" : id) : local.nome;
-        return toAuthUser(local, name, email, context.getUserPrincipal() == null ? List.of() :
-                context.isUserInRole("ADMIN") ? List.of("ADMIN") : context.isUserInRole("CLIENTE") ? List.of("CLIENTE") : List.of());
+        List<String> roles = context.getUserPrincipal() == null ? List.of() :
+                java.util.stream.Stream.of("ADMIN", "CLIENTE").filter(context::isUserInRole).toList();
+        return toAuthUser(local, name, email, roles);
     }
 
     private AuthDTOs.UsuarioAuth toAuthUser(Usuario local, String name, String email, List<String> roles) {

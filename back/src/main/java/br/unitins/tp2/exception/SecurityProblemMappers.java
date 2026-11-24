@@ -84,7 +84,7 @@ class ProblemResponseFilter implements ContainerResponseFilter {
                 case 422 -> "Dados inválidos";
                 default -> "Não encontrado";
             };
-            String detail = switch (status) {
+            String detail = status == 422 && response.getEntity() instanceof String message ? message : switch (status) {
                 case 401 -> "É necessário autenticar para acessar este recurso.";
                 case 403 -> "Você não tem permissão para acessar este recurso.";
                 case 409 -> "Já existe um registro com os mesmos dados únicos.";
