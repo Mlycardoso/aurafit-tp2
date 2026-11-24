@@ -14,9 +14,8 @@ public class Usuario extends DefaultEntity {
     public String nome;
     @Column(nullable = false, unique = true, length = 160)
     public String email;
-    @JsonIgnore
-    @Column(nullable = false, length = 255)
-    public String senhaHash;
+    @Column(unique = true, length = 36)
+    public String keycloakId;
     @Column(nullable = false)
     public boolean ativo;
     @ElementCollection(fetch = FetchType.EAGER)

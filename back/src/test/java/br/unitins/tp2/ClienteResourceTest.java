@@ -21,7 +21,7 @@ class ClienteResourceTest {
             given().contentType("application/json").body(dto).post("/clientes").then().statusCode(400);
             given().get("/clientes/cpf/52998224725").then().statusCode(200).body("id", is(cliente));
             var conta = new HashMap<String,Object>(Map.of("nome", "Conta Teste", "email", "vinculo@example.com",
-                "senha", "Senha exemplo 123456", "ativo", true, "perfis", java.util.List.of("CLIENTE"), "idCliente", cliente));
+                "ativo", true, "perfis", java.util.List.of("CLIENTE"), "idCliente", cliente));
             usuario = given().contentType("application/json").body(conta).post("/usuarios")
                 .then().statusCode(201).body("cliente.cpf", is("52998224725")).extract().path("id");
             conta.put("email", "outra@example.com");
@@ -32,7 +32,6 @@ class ClienteResourceTest {
             given().contentType("application/json").body(dto).put("/clientes/" + cliente).then().statusCode(204);
             given().get("/usuarios/" + usuario).then().statusCode(200)
                 .body("cliente.ativo", is(true)).body("cliente.telefones", contains("11988887777"));
-            conta.remove("senha");
             conta.remove("idCliente");
             given().contentType("application/json").body(conta).put("/usuarios/" + usuario)
                 .then().statusCode(200).body("cliente", nullValue());

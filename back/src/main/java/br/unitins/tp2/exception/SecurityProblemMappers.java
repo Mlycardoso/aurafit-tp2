@@ -76,15 +76,19 @@ class ProblemResponseFilter implements ContainerResponseFilter {
 
     @Override public void filter(ContainerRequestContext request, ContainerResponseContext response) {
         int status = response.getStatus();
-        if ((status == 401 || status == 403 || status == 404) && !(response.getEntity() instanceof Problem)) {
+        if ((status == 401 || status == 403 || status == 404 || status == 409 || status == 422) && !(response.getEntity() instanceof Problem)) {
             String title = switch (status) {
                 case 401 -> "Não autenticado";
                 case 403 -> "Acesso negado";
+                case 409 -> "Conflito";
+                case 422 -> "Dados inválidos";
                 default -> "Não encontrado";
             };
             String detail = switch (status) {
                 case 401 -> "É necessário autenticar para acessar este recurso.";
                 case 403 -> "Você não tem permissão para acessar este recurso.";
+                case 409 -> "Já existe um registro com os mesmos dados únicos.";
+                case 422 -> "Os dados enviados não podem ser processados.";
                 default -> "O recurso solicitado não foi encontrado.";
             };
             response.setEntity(SecurityProblemResponse.create(status, title, detail, baseUrl, uri).getEntity());

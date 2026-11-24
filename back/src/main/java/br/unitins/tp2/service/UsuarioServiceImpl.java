@@ -16,7 +16,7 @@ import jakarta.ws.rs.NotFoundException;
 @ApplicationScoped
 public class UsuarioServiceImpl implements UsuarioService {
     @Inject UsuarioRepository repository;
-    @Inject SenhaService senhas;
+    @Inject KeycloakClient keycloak;
     @Inject ClienteRepository clientes;
 
     @Override
@@ -25,7 +25,10 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = new Usuario();
         copiar(usuario, dto.nome(), dto.email(), dto.ativo(), dto.perfis());
         vincular(usuario, dto.idCliente());
-        usuario.senhaHash = senhas.gerarHash(dto.senha());
+        KeycloakClient.UserAccount account = keycloak.createUser(dto.nome(), dto.email(),
+                java.util.UUID.randomUUID().toString() + "Aa1!", true);
+        usuario.keycloakId = account.id();
+        keycloak.setRoles(account.id(), dto.perfis().stream().map(Enum::name).toList());
         repository.persistAndFlush(usuario);
         return usuario;
     }
@@ -36,10 +39,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = findById(id);
         copiar(usuario, dto.nome(), dto.email(), dto.ativo(), dto.perfis());
         vincular(usuario, dto.idCliente());
-        if (dto.senha() != null) {
-            if (dto.senha().isBlank()) throw ValidationException.of("senha", "Informe uma senha valida.");
-            usuario.senhaHash = senhas.gerarHash(dto.senha());
-        }
+        keycloak.updateUser(usuario.keycloakId, dto.nome(), dto.email(), dto.ativo());
+        keycloak.setRoles(usuario.keycloakId, dto.perfis().stream().map(Enum::name).toList());
         return usuario;
     }
 
@@ -73,7 +74,9 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     @Transactional
     public void delete(long id) {
-        if (!repository.deleteById(id)) throw new NotFoundException("Usuario nao encontrado.");
+        Usuario usuario = findById(id);
+        keycloak.disableUser(usuario.keycloakId);
+        usuario.ativo = false;
     }
 
     @Override
