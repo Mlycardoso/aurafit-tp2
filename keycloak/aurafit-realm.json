@@ -1,0 +1,51 @@
+{
+  "realm": "aurafit",
+  "enabled": true,
+  "roles": {
+    "realm": [
+      { "name": "ADMIN", "description": "Administração da AuraFit" },
+      { "name": "CLIENTE", "description": "Cliente da loja AuraFit" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "aurafit-api",
+      "name": "AuraFit API",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "clientAuthenticatorType": "client-secret",
+      "redirectUris": [],
+      "webOrigins": []
+    },
+    {
+      "clientId": "aurafit-admin",
+      "name": "AuraFit backend administration",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "directAccessGrantsEnabled": false,
+      "standardFlowEnabled": false,
+      "serviceAccountsEnabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "redirectUris": [],
+      "webOrigins": [],
+      "protocolMappers": []
+    }
+  ],
+  "users": [
+    {
+      "username": "admin@aurafit.local",
+      "email": "admin@aurafit.local",
+      "firstName": "Admin",
+      "lastName": "AuraFit",
+      "enabled": true,
+      "emailVerified": true,
+      "requiredActions": ["UPDATE_PASSWORD"],
+      "realmRoles": ["ADMIN"]
+    }
+  ]
+}
