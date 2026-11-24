@@ -46,6 +46,14 @@
       "emailVerified": true,
       "requiredActions": ["UPDATE_PASSWORD"],
       "realmRoles": ["ADMIN"]
+    },
+    {
+      "username": "service-account-aurafit-admin",
+      "enabled": true,
+      "serviceAccountClientId": "aurafit-admin",
+      "clientRoles": {
+        "realm-management": ["manage-users", "view-users", "query-users", "view-realm"]
+      }
     }
   ]
 }

@@ -11,6 +11,17 @@ if (!($existing -match '^KEYCLOAK_BOOTSTRAP_PASSWORD=')) {
     $password = [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
     Add-Content -LiteralPath $configPath -Encoding ascii -Value "KEYCLOAK_BOOTSTRAP_PASSWORD=$password"
 }
+$defaults = @(
+    'KEYCLOAK_SERVER_URL=http://127.0.0.1:8081',
+    'KEYCLOAK_AUTH_SERVER_URL=http://127.0.0.1:8081/realms/aurafit',
+    'KEYCLOAK_REALM=aurafit',
+    'KEYCLOAK_API_CLIENT_ID=aurafit-api',
+    'KEYCLOAK_ADMIN_CLIENT_ID=aurafit-admin'
+)
+foreach ($entry in $defaults) {
+    $key = $entry.Split('=', 2)[0]
+    if (!($existing -match "^$key=")) { Add-Content -LiteralPath $configPath -Encoding ascii -Value $entry }
+}
 $realmPath = Join-Path $PSScriptRoot 'keycloak'
 New-Item -ItemType Directory -Force -Path $realmPath | Out-Null
 docker compose --env-file $configPath -f (Join-Path $PSScriptRoot 'compose.keycloak.yaml') up -d
