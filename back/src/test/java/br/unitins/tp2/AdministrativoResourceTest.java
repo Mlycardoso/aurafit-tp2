@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
+@io.quarkus.test.security.TestSecurity(user = "admin", roles = {"ADMIN"})
 class AdministrativoResourceTest {
     private Map<String, Object> cadastro(String nome) {
         return new HashMap<>(Map.of("nome", nome, "descricao", "Teste administrativo", "ativo", true));

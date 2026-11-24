@@ -8,6 +8,7 @@ import jakarta.validation.constraints.*;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 @Path("clientes")
+@jakarta.annotation.security.RolesAllowed("ADMIN")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ClienteResource {
@@ -27,7 +28,7 @@ public class ClienteResource {
         return PageResponse.of(service.findByNome(nome, page, size), page, size, service.count(nome),
                 ClienteResponseMapper::toResponse);
     }
-    @GET @Path("cep/{cep}")
+    @GET @Path("cep/{cep}") @jakarta.annotation.security.PermitAll
     public CepDTO consultar(@PathParam("cep") String cep) { return ceps.consultar(cep); }
     @GET @Path("cpf/{cpf}")
     public ClienteResponseDTO buscarPorCpf(@PathParam("cpf") @Pattern(regexp="[0-9]{11}") String cpf) {

@@ -14,6 +14,7 @@ import br.unitins.tp2.service.SenhaService;
 import br.unitins.tp2.repository.UsuarioRepository;
 
 @QuarkusTest
+@io.quarkus.test.security.TestSecurity(user = "admin", roles = {"ADMIN"})
 class UsuarioResourceTest {
     @Inject SenhaService senhas;
     @Inject UsuarioRepository repository;

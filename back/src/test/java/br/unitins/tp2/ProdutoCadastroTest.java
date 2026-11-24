@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
+@io.quarkus.test.security.TestSecurity(user = "admin", roles = {"ADMIN"})
 class ProdutoCadastroTest {
     @Test
     void devePreservarProdutoInativoValidarSkuEReativar() {

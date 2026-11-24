@@ -8,6 +8,7 @@ import jakarta.validation.constraints.*;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 @Path("fornecedores")
+@jakarta.annotation.security.RolesAllowed("ADMIN")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class FornecedorResource {
@@ -27,7 +28,7 @@ public class FornecedorResource {
         return PageResponse.of(service.findByNome(nome, page, size), page, size, service.count(nome),
                 FornecedorResponseMapper::toResponse);
     }
-    @GET @Path("cep/{cep}")
+    @GET @Path("cep/{cep}") @jakarta.annotation.security.PermitAll
     public CepDTO consultar(@PathParam("cep") String cep) { return ceps.consultar(cep); }
     @GET @Path("cnpj/{cnpj}")
     public FornecedorResponseDTO buscarPorCnpj(@PathParam("cnpj") @Pattern(regexp="[A-Z0-9]{12}[0-9]{2}") String cnpj) {

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
+@io.quarkus.test.security.TestSecurity(user = "admin", roles = {"ADMIN"})
 class FornecedorResourceTest {
     private Map<String, Object> dados(String cnpj) {
         return new HashMap<>(Map.of("nome", "Fornecedor Teste", "cnpj", cnpj,
