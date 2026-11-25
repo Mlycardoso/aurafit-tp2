@@ -40,13 +40,10 @@ export class UsuarioFormulario {
   protected form = this.fb.nonNullable.group({
     nome: ['', [Validators.required, Validators.pattern(/\S[\s\S]*\S/), Validators.minLength(2), Validators.maxLength(120)]],
     email: ['', [Validators.required, Validators.email, Validators.maxLength(160)]],
-    senha: ['', [Validators.minLength(15), Validators.maxLength(128), Validators.pattern(/\S/)]],
-    confirmacao: [''],
     ativo: [true]
   });
 
   constructor() {
-    if (!this.id) this.form.controls.senha.addValidators(Validators.required);
     if (this.id) this.service.buscar(this.id).subscribe({
       next: u => {
         this.form.patchValue({nome: u.nome, email: u.email, ativo: u.ativo});
@@ -64,13 +61,13 @@ export class UsuarioFormulario {
     this.submitted.set(true);
     this.form.markAllAsTouched();
     const v = this.form.getRawValue();
-    if (this.form.invalid || !this.selected().length || v.senha !== v.confirmacao) return;
+    if (this.form.invalid || !this.selected().length) return;
     this.saving.set(true); this.error.set('');
     this.service.salvar(this.id, {
       nome: v.nome.trim(), email: v.email.trim(), ativo: v.ativo,
-      perfis: this.selected(), senha: v.senha || null, idCliente: this.cliente()?.id ?? null
+      perfis: this.selected(), idCliente: this.cliente()?.id ?? null
     }).subscribe({
-      next: () => { this.form.controls.senha.reset(); this.form.controls.confirmacao.reset(); this.router.navigate(['/admin/usuarios']); },
+      next: () => this.router.navigate(['/admin/usuarios']),
       error: e => { this.error.set(getApiError(e)); this.saving.set(false); }
     });
   }

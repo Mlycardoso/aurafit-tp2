@@ -18,7 +18,7 @@ A AuraFit é uma plataforma web para uma loja especializada exclusivamente em wh
 
 A identidade visual combina rosa, verde-menta e superfícies claras, com foco na apresentação dos produtos e na facilidade de navegação.
 
-**Status:** em desenvolvimento. A administração e a vitrine estão implementadas; o fluxo de compra ainda não realiza pedidos ou pagamentos.
+**Status:** loja e administração com autenticação Keycloak, criação e acompanhamento de pedidos. O pagamento continua fora do escopo e nenhuma cobrança é simulada.
 
 ## Recursos Atuais
 
@@ -30,17 +30,19 @@ A identidade visual combina rosa, verde-menta e superfícies claras, com foco na
 - Inativação e reativação de produtos, preservando os cadastros e seus vínculos.
 - Consulta de endereço por CEP, com município e estado estruturados.
 - Validações no front-end e no back-end.
-- Cadastro de perfis de usuário, ainda sem autenticação de acesso.
+- Autorização administrativa por role ADMIN via Keycloak.
+- Cadastro e gerenciamento de usuários sincronizados com o Keycloak; senhas não ficam no banco da loja.
 
 ### Loja
 
 - Catálogo integrado à API, com busca ao digitar, filtros, ordenação e paginação.
 - Página de produto com preço, disponibilidade e quantidade.
 - Carrinho e favoritos armazenados no navegador.
-- Consulta de endereço por CEP e revisão dos dados da compra.
+- Consulta de endereço por CEP, seleção de entrega e finalização do pedido.
+- Acompanhamento de pedidos pelo cliente e pela administração.
 - Interface adaptada para computador e celular.
 
-As imagens conceituais de whey são ilustrativas. Autenticação, pedidos, cálculo de frete e pagamento ainda dependem de implementação. Consulte os [detalhes das integrações](INTEGRACOES-LOJA.md).
+As imagens conceituais de whey são ilustrativas. Consulte o [guia de autenticação Keycloak](KEYCLOAK.md), os [detalhes da loja](INTEGRACOES-LOJA.md) e o [guia S3](TRABALHO-05-S3.md).
 
 ## Tecnologias
 
@@ -74,14 +76,21 @@ Front-end e back-end são aplicações independentes, mantidas no mesmo reposit�
 
 ## Acesso Local
 
-Para iniciar o armazenamento de imagens e consultar os limites de upload, veja o [guia de Object Storage S3](TRABALHO-05-S3.md).
+Subida local no Windows/PowerShell, nesta ordem:
 
-Com o banco, a API e o front-end em execução:
+1. PostgreSQL local: banco `topicos2db`, usuário `topicos2`.
+2. Na raiz, `./iniciar-storage.ps1`.
+3. Na raiz, `./iniciar-keycloak.ps1`; configure os secrets dos clients em `back/.env` seguindo [KEYCLOAK.md](KEYCLOAK.md).
+4. Em `back/`, `./mvnw.cmd quarkus:dev`.
+5. Em `front/`, `npm start -- --host 127.0.0.1`.
+
+Para configurar storage e seus limites de upload, veja [TRABALHO-05-S3.md](TRABALHO-05-S3.md).
 
 | Área | Endereço |
 | --- | --- |
 | Loja | http://localhost:4200/loja |
-| Administração | http://localhost:4200/admin |
+| Administração | http://localhost:4200/admin (requer role ADMIN) |
 | Swagger UI | http://localhost:8080/q/swagger-ui/ |
+| Keycloak | http://127.0.0.1:8081 |
 
-> O acesso administrativo ainda não possui autenticação ou autorização. Esta versão é destinada ao desenvolvimento local e não deve ser exposta publicamente com dados reais.
+O Keycloak usa volume persistente em modo de desenvolvimento. A configuração não deve ser exposta publicamente como produção.

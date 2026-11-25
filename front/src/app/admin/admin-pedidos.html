@@ -1,0 +1,19 @@
+<section class="page-header"><div><p class="eyebrow">ACOMPANHAMENTO DE VENDAS</p><h1>Produtos vendidos</h1><p class="page-description">Pedidos recebidos, entrega e situação de envio.</p></div></section>
+<div class="filters">
+  <label>Status<select [ngModel]="status()" (ngModelChange)="changeStatus($event)"><option value="">Todos</option><option value="PENDENTE">Pendente</option><option value="ENVIADO">Enviado</option></select></label>
+  <label>Nome do cliente<input [ngModel]="nome()" (ngModelChange)="nome.set($event)" (keyup.enter)="search()" placeholder="Buscar cliente" /></label>
+  <button class="btn btn-primary" (click)="search()">Buscar</button>
+</div>
+@if (error()) { <div class="alert error" role="alert">{{error()}}</div> }
+@if (loading()) { <div class="loading-state">Carregando pedidos...</div> }
+@else if (!pedidos().length) { <div class="empty-state">Nenhum pedido encontrado.</div> }
+@else { <div class="orders">@for (pedido of pedidos(); track pedido.id) {
+  <article class="order-card">
+    <header><div><h2>Pedido #{{pedido.id}} · {{pedido.nomeCliente}}</h2><span>{{pedido.dataHora | date:'dd/MM/yyyy HH:mm'}}</span></div><span class="badge" [class.sent]="pedido.status === 'ENVIADO'">{{pedido.status === 'PENDENTE' ? 'Pendente' : 'Enviado'}}</span></header>
+    <div class="order-meta"><span>Entrega {{pedido.tipoEntrega === 'RAPIDA' ? 'rápida' : 'normal'}}</span><span>Prazo: {{pedido.prazoEntrega | date:'dd/MM/yyyy'}}</span><span>CEP {{pedido.cep}}</span></div>
+    <p class="address">{{pedido.logradouro}}, {{pedido.numero}} {{pedido.complemento || ''}} · {{pedido.bairro}} · {{pedido.municipio}}/{{pedido.estado}}</p>
+    <div class="items">@for (item of pedido.itens; track $index) { <div><span>{{item.nomeProduto}} · {{item.quantidade}} un.</span><strong>{{item.precoUnitario | currency:'BRL'}}</strong></div> }</div>
+    <footer><strong>Total {{pedido.total | currency:'BRL'}}</strong>@if (pedido.status === 'PENDENTE') { <button class="btn btn-primary" [disabled]="updating() === pedido.id" (click)="marcarEnviado(pedido)">{{updating() === pedido.id ? 'Atualizando...' : 'Marcar como enviado'}}</button> }</footer>
+  </article>
+}</div>
+<nav class="pagination" aria-label="Paginação de pedidos"><button class="btn btn-secondary" [disabled]="page() === 0" (click)="changePage(-1)">Anterior</button><span>Página {{page()+1}} de {{totalPages()}}</span><button class="btn btn-secondary" [disabled]="page()+1 >= totalPages()" (click)="changePage(1)">Próxima</button></nav> }

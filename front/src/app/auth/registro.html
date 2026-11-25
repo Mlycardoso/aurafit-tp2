@@ -1,0 +1,21 @@
+<main class="auth-shell"><section class="auth-card wide" aria-labelledby="register-title">
+  <a class="brand" routerLink="/loja"><img src="/logo-aurafit.png" alt="" /><span>AuraFit<small>WHEY, DO SEU JEITO.</small></span></a>
+  <p class="eyebrow">Boas-vindas</p><h1 id="register-title">Crie sua conta.</h1><p class="intro">Cadastre seus dados e o endereço para acompanhar suas compras.</p>
+  @if (error()) { <div class="alert" role="alert">{{error()}}</div> }
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="fields">
+      <div class="field full"><label for="nome">Nome completo</label><input id="nome" formControlName="nome" autocomplete="name" /></div>
+      <div class="field"><label for="email">E-mail</label><input id="email" type="email" formControlName="email" autocomplete="email" /></div>
+      <div class="field"><label for="senha">Senha (mínimo 15 caracteres)</label><input id="senha" type="password" formControlName="senha" autocomplete="new-password" /></div>
+      <div class="field"><label for="telefone">Telefone com DDD</label><input id="telefone" inputmode="numeric" formControlName="telefone" autocomplete="tel" /></div>
+      <div class="field"><label for="cep">CEP (somente números)</label><input id="cep" inputmode="numeric" formControlName="cep" autocomplete="postal-code" /></div>
+      <div class="field full"><label for="logradouro">Logradouro</label><input id="logradouro" formControlName="logradouro" autocomplete="street-address" /></div>
+      <div class="field"><label for="bairro">Bairro</label><input id="bairro" formControlName="bairro" /></div>
+      <div class="field"><label for="numero">Número</label><input id="numero" formControlName="numero" /></div>
+      <div class="field full"><label for="complemento">Complemento (opcional)</label><input id="complemento" formControlName="complemento" /></div>
+    </div>
+    <p class="payment-note">O pagamento é feito fora desta aplicação. Nenhuma cobrança é realizada no cadastro ou na loja.</p>
+    <button class="primary" type="submit" [disabled]="busy()">{{busy() ? 'Criando conta...' : 'Criar conta'}}</button>
+  </form>
+  <p class="links">Já tem conta? <a routerLink="/login">Entrar</a></p>
+</section></main>

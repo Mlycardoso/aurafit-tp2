@@ -1,0 +1,16 @@
+name: aurafit-keycloak
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4.5
+    restart: unless-stopped
+    command: ["start-dev", "--import-realm"]
+    ports:
+      - "127.0.0.1:8081:8080"
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_BOOTSTRAP_USER:?Execute iniciar-keycloak.ps1 primeiro}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_BOOTSTRAP_PASSWORD:?Execute iniciar-keycloak.ps1 primeiro}
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+      - ./keycloak:/opt/keycloak/data/import:ro
+volumes:
+  keycloak_data:

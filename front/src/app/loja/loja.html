@@ -16,9 +16,15 @@
         type="search"
     /></label>
     <div class="header-actions">
-      <a routerLink="/loja/conta" title="Minha conta" aria-label="Minha conta"
-        ><img src="/icons/user-round.svg" alt="" /><span>Minha conta</span></a
-      >
+      @if (auth.isAuthenticated()) {
+        <span class="account-name">{{auth.usuario()?.nome}}</span>
+        @if (auth.roles().includes('CLIENTE')) { <a routerLink="/loja/meus-pedidos">Meus pedidos</a> }
+        <button type="button" class="account-action" (click)="sair()">Sair</button>
+        @if (auth.isAdmin()) { <a routerLink="/admin" title="Administração">Admin</a> }
+      } @else {
+        <a routerLink="/login" title="Entrar"><img src="/icons/user-round.svg" alt="" /><span>Entrar</span></a>
+        <a routerLink="/registro" title="Criar conta"><span>Criar conta</span></a>
+      }
       <a routerLink="/loja/favoritos" title="Favoritos" aria-label="Favoritos"
         ><img src="/icons/heart.svg" alt="" /><span>Favoritos</span></a
       >
@@ -357,7 +363,15 @@
           <h1>{{ view() === 'checkout' ? 'Revisar sua compra' : 'Seu carrinho' }}</h1>
           <span>{{ state.count() }} itens</span>
         </div>
-        @if (!rows().length) {
+        @if (pedidoCriado(); as pedido) {
+          <section class="order-confirm" role="status">
+            <span class="kicker">PEDIDO CONFIRMADO</span>
+            <h2>Seu pedido #{{pedido.id}} foi registrado.</h2>
+            <p>{{pedido.dataHora | date:'dd/MM/yyyy HH:mm'}} · entrega {{pedido.tipoEntrega === 'RAPIDA' ? 'rápida' : 'normal'}} até {{pedido.prazoEntrega | date:'dd/MM/yyyy'}}</p>
+            <p>Pagamento fora da aplicação. Nenhuma cobrança foi realizada.</p>
+            <a class="primary" routerLink="/loja/meus-pedidos">Acompanhar meus pedidos</a>
+          </section>
+        } @else if (!rows().length) {
           <div class="status">
             <h2>Seu próximo scoop está na vitrine.</h2>
             <p>Escolha um whey para começar.</p>
@@ -411,43 +425,18 @@
                 </article>
               }
               @if (view() === 'checkout') {
-                <div class="checkout-form">
-                  <h2>1. Identificação</h2>
-                  <label
-                    >Nome completo<input [(ngModel)]="customer.nome" autocomplete="name" /></label
-                  ><label
-                    >E-mail<input type="email" [(ngModel)]="customer.email" autocomplete="email"
-                  /></label>
-                  <h2>2. Endereço e entrega</h2>
-                  <label
-                    >CEP
-                    <div class="cep-input">
-                      <input
-                        [(ngModel)]="cep"
-                        inputmode="numeric"
-                        maxlength="9"
-                        (ngModelChange)="address.set(''); cepError.set('')"
-                      /><button class="outline" [disabled]="cepBusy()" (click)="lookupCep()">
-                        Consultar
-                      </button>
-                    </div></label
-                  >
-                  @if (cepError()) {
-                    <p role="alert">{{ cepError() }}</p>
-                  }
-                  @if (address()) {
-                    <p>{{ address() }}</p>
-                  }
-                  <label>Número<input [(ngModel)]="customer.numero" /></label
-                  ><label>Complemento<input [(ngModel)]="customer.complemento" /></label>
-                  <p class="muted">
-                    As opções de entrega estarão disponíveis após a integração de frete.
-                  </p>
-                  <h2>3. Pagamento</h2>
-                  <p>
-                    Pagamento ainda indisponível. Nenhum pedido será enviado e nenhuma cobrança será
-                    realizada.
-                  </p>
+                <div class="delivery-panel">
+                  <h2>Endereço de entrega</h2>
+                  @if (enderecoEntrega()) { <p class="address-card">{{enderecoEntrega()}}</p> }
+                  @else { <p role="alert">Complete seu endereço no cadastro antes de finalizar.</p> }
+                  <a routerLink="/loja/conta">Conferir dados da conta</a>
+                  <h2>Escolha a entrega</h2>
+                  <div class="delivery-options">
+                    <label [class.selected]="tipoEntrega() === 'NORMAL'"><input type="radio" name="delivery" [checked]="tipoEntrega() === 'NORMAL'" (change)="tipoEntrega.set('NORMAL')" /><span><strong>Normal</strong><small>Até 7 dias úteis</small></span><b>R$ 14,90</b></label>
+                    <label [class.selected]="tipoEntrega() === 'RAPIDA'"><input type="radio" name="delivery" [checked]="tipoEntrega() === 'RAPIDA'" (change)="tipoEntrega.set('RAPIDA')" /><span><strong>Rápida</strong><small>Até 2 dias úteis</small></span><b>R$ 29,90</b></label>
+                  </div>
+                  <p class="payment-note">Pagamento fora da aplicação. Nenhuma cobrança será realizada nesta etapa.</p>
+                  @if (pedidoError()) { <p class="error-text" role="alert">{{pedidoError()}}</p> }
                 </div>
               }
             </div>
@@ -456,14 +445,14 @@
               <div>
                 <span>Subtotal</span><strong>{{ total() | currency: 'BRL' }}</strong>
               </div>
-              <div><span>Frete</span><span>A calcular</span></div>
-              <p>O valor final depende da entrega.</p>
+              <div><span>Frete</span><strong>{{view() === 'checkout' ? (frete() | currency:'BRL') : 'Calculado no checkout'}}</strong></div>
+              @if (view() === 'checkout') { <div><span>Total</span><strong>{{totalComFrete() | currency:'BRL'}}</strong></div> }
               @if (view() === 'cart') {
                 <button class="primary" [disabled]="cartInvalid()" routerLink="/loja/checkout">
                   Revisar compra<img src="/icons/arrow-up-right.svg" alt="" />
                 </button>
               } @else {
-                <button class="primary" disabled>Finalização indisponível</button>
+                <button class="primary" [disabled]="cartInvalid() || finalizando() || !enderecoEntrega()" (click)="finalizarPedido()">{{finalizando() ? 'Enviando pedido...' : 'Finalizar pedido'}}</button>
               }
               <small>Carrinho salvo neste navegador. Disponibilidade sujeita à confirmação.</small>
             </aside>

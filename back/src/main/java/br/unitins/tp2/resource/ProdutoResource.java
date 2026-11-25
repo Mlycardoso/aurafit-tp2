@@ -23,6 +23,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("produtos")
+@jakarta.annotation.security.RolesAllowed("ADMIN")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ProdutoResource {
@@ -31,6 +32,7 @@ public class ProdutoResource {
     ProdutoService service;
 
     @GET
+    @jakarta.annotation.security.PermitAll
     public PageResponse<ProdutoResponseDTO> findAll(
             @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("pageSize") @DefaultValue("5") int pageSize) {
@@ -39,6 +41,7 @@ public class ProdutoResource {
     }
 
     @GET
+    @jakarta.annotation.security.PermitAll
     @Path("/nome/{nome}")
     public PageResponse<ProdutoResponseDTO> findByNome(
             @PathParam("nome") String nome,
@@ -49,6 +52,7 @@ public class ProdutoResource {
     }
 
     @GET
+    @jakarta.annotation.security.PermitAll
     @Path("/{id}")
     public ProdutoResponseDTO findById(@PathParam("id") long id) {
         return ProdutoResponseDTO.valueOf(service.findById(id));

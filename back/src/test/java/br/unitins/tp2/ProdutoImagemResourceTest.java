@@ -15,6 +15,7 @@ import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 
 /** Integração real: PostgreSQL aurafit_test e bucket aurafit-produtos-test. */
 @QuarkusTest
+@io.quarkus.test.security.TestSecurity(user = "admin", roles = {"ADMIN"})
 class ProdutoImagemResourceTest {
     @Inject ProdutoImagemReferencia referencias;
     @Inject ImagemStorage storage;

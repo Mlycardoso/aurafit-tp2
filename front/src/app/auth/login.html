@@ -1,0 +1,19 @@
+<main class="auth-shell">
+  <section class="auth-card" aria-labelledby="login-title">
+    <a class="brand" routerLink="/loja"><img src="/logo-aurafit.png" alt="" /><span>AuraFit<small>WHEY, DO SEU JEITO.</small></span></a>
+    <p class="eyebrow">Sua conta AuraFit</p><h1 id="login-title">Que bom ter você de volta.</h1>
+    <p class="intro">Entre para acompanhar seus pedidos e continuar sua experiência.</p>
+    @if (error()) { <div class="alert" role="alert">{{error()}}</div> }
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="field"><label for="email">E-mail</label><input id="email" type="email" formControlName="email" autocomplete="email" />
+        @if (form.controls.email.touched && form.controls.email.invalid) { <small class="field-error">Informe um e-mail válido.</small> }
+      </div>
+      <div class="field"><label for="senha">Senha</label><div class="password"><input id="senha" [type]="showPassword() ? 'text' : 'password'" formControlName="senha" autocomplete="current-password" /><button type="button" (click)="showPassword.set(!showPassword())" [attr.aria-label]="showPassword() ? 'Ocultar senha' : 'Mostrar senha'">{{showPassword() ? 'Ocultar' : 'Mostrar'}}</button></div>
+        @if (form.controls.senha.touched && form.controls.senha.invalid) { <small class="field-error">Informe sua senha.</small> }
+      </div>
+      <button class="primary" type="submit" [disabled]="busy()">{{busy() ? 'Entrando...' : 'Entrar'}}</button>
+    </form>
+    <p class="links">Ainda não tem conta? <a routerLink="/registro">Criar conta</a></p>
+    <a class="back" routerLink="/loja">Voltar para a loja</a>
+  </section>
+</main>

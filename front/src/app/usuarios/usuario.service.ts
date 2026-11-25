@@ -3,17 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { PageResponse } from '../shared/page-response.model';
 import { Cliente } from '../clientes/cliente.service';
 
-export type Perfil = 'ADMINISTRADOR' | 'ATENDENTE' | 'CLIENTE';
+export type Perfil = 'ADMIN' | 'CLIENTE';
 export const perfis: {id: Perfil; nome: string}[] = [
-  {id: 'ADMINISTRADOR', nome: 'Administrador'},
-  {id: 'ATENDENTE', nome: 'Atendente'},
+  {id: 'ADMIN', nome: 'Administrador'},
   {id: 'CLIENTE', nome: 'Cliente'}
 ];
 export interface UsuarioPayload {
   idCliente?: number | null;
-  nome: string; email: string; ativo: boolean; perfis: Perfil[]; senha?: string | null;
+  nome: string; email: string; ativo: boolean; perfis: Perfil[];
 }
-export interface Usuario extends Omit<UsuarioPayload, 'senha'> { id: number; cliente?: Cliente | null; }
+export interface Usuario extends UsuarioPayload { id: number; keycloakId: string; cliente?: Cliente | null; }
 
 @Injectable({providedIn: 'root'})
 export class UsuarioService {

@@ -7,7 +7,7 @@ import br.unitins.tp2.model.Usuario;
 public final class UsuarioResponseMapper {
     private UsuarioResponseMapper() {}
     public static UsuarioResponseDTO toResponse(Usuario usuario) {
-        return new UsuarioResponseDTO(usuario.getId(), usuario.nome, usuario.email,
+        return new UsuarioResponseDTO(usuario.getId(), usuario.keycloakId, usuario.nome, usuario.email,
                 usuario.ativo, Set.copyOf(usuario.perfis),
                 usuario.cliente == null ? null : ClienteResponseMapper.toResponse(usuario.cliente));
     }

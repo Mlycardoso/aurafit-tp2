@@ -1,22 +1,26 @@
 import { Component, computed, inject, signal, DestroyRef } from '@angular/core';
-import { CurrencyPipe, TitleCasePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe, TitleCasePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, expand, EMPTY, map, reduce, timeout } from 'rxjs';
+import { catchError, expand, EMPTY, finalize, map, reduce, timeout } from 'rxjs';
 import { ProdutoService } from '../produtos/produto.service';
 import { flavor, LojaState, ShopProduct, weight } from './loja-state';
 import { PageResponse } from '../shared/page-response.model';
+import { AuthService } from '../auth/auth.service';
+import { Pedido, PedidoService, TipoEntrega } from '../pedidos/pedido.service';
 
 @Component({
   selector: 'app-loja',
-  imports: [RouterLink, FormsModule, CurrencyPipe, TitleCasePipe],
+  imports: [RouterLink, FormsModule, CurrencyPipe, DatePipe, TitleCasePipe],
   templateUrl: './loja.html',
   styleUrl: './loja.scss',
 })
 export class Loja {
   readonly state = inject(LojaState);
+  readonly auth = inject(AuthService);
+  private readonly pedidos = inject(PedidoService);
   private readonly api = inject(ProdutoService);
   private readonly http = inject(HttpClient);
   private readonly route = inject(ActivatedRoute);
@@ -40,12 +44,32 @@ export class Loja {
   readonly cepError = signal('');
   readonly address = signal('');
   cep = '';
-  customer = { nome: '', email: '', numero: '', complemento: '' };
   readonly flavor = flavor;
   readonly weight = weight;
   readonly view = signal('catalog');
   readonly productId = signal(0);
   readonly selected = computed(() => this.products().find((p) => p.id === this.productId()));
+  readonly tipoEntrega = signal<TipoEntrega>('NORMAL');
+  readonly finalizando = signal(false);
+  readonly pedidoError = signal('');
+  readonly pedidoCriado = signal<Pedido | null>(null);
+  readonly frete = computed(() => this.tipoEntrega() === 'RAPIDA' ? 29.9 : 14.9);
+  readonly totalComFrete = computed(() => this.total() + this.frete());
+  readonly enderecoEntrega = computed(() => {
+    const c = this.auth.usuario()?.cliente;
+    return c ? `${c.logradouro}, ${c.numero}${c.complemento ? ' · ' + c.complemento : ''} · ${c.bairro} · ${c.municipio.nome}/${c.municipio.estado.sigla} · CEP ${c.cep}` : '';
+  });
+  protected sair(): void { this.auth.logout().subscribe(() => this.router.navigate(['/loja'])); }
+  protected finalizarPedido(): void {
+    if (this.finalizando() || this.cartInvalid()) return;
+    this.finalizando.set(true); this.pedidoError.set('');
+    this.pedidos.criar(this.tipoEntrega(), this.state.cart().map(item => ({ produtoId: item.id, quantidade: item.quantity })))
+      .pipe(finalize(() => this.finalizando.set(false)))
+      .subscribe({
+        next: order => { this.pedidoCriado.set(order); this.state.clearCart(); },
+        error: error => this.pedidoError.set(error.status === 422 ? 'O estoque mudou. Revise as quantidades do carrinho.' : 'Não foi possível finalizar o pedido. Tente novamente.'),
+      });
+  }
   readonly types = computed(() => [...new Set(this.products().map((p) => p.categoria.nome))]);
   readonly brands = computed(() => [
     ...new Set(this.products().map((p) => p.marca?.nome || 'Não informada')),

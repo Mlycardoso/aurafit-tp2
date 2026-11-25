@@ -1,0 +1,21 @@
+:host { display:block; }
+.eyebrow { margin:0 0 5px; color:#e93670; font-size:11px; font-weight:800; letter-spacing:.1em; }
+.page-description { margin:8px 0 0; color:#7b8493; font-size:13px; }
+.filters { display:flex; align-items:end; gap:14px; padding:18px; margin-bottom:20px; background:#fff; border:1px solid #e7e9ee; border-radius:7px; }
+.filters label { display:grid; gap:6px; min-width:180px; color:#49515f; font-size:12px; font-weight:700; }
+.filters input,.filters select { min-height:40px; padding:8px 10px; border:1px solid #d9dde4; border-radius:5px; font:inherit; font-weight:400; }
+.orders { display:grid; gap:14px; }
+.order-card { padding:20px; background:#fff; border:1px solid #e7e9ee; border-radius:8px; box-shadow:0 3px 12px #14192208; }
+.order-card header,.order-card footer { display:flex; justify-content:space-between; align-items:center; gap:14px; }
+.order-card h2 { margin:0 0 5px; color:#20242d; font-size:16px; }
+.order-card header span,.order-meta,.address { color:#7b8493; font-size:12px; }
+.badge { padding:6px 10px; border-radius:20px; color:#75551a!important; background:#fff1d5; font-weight:700; }
+.badge.sent { color:#315745!important; background:#deeee7; }
+.order-meta { display:flex; flex-wrap:wrap; gap:16px; margin-top:16px; }
+.address { padding:10px 12px; background:#f6f7f9; border-radius:4px; line-height:1.6; }
+.items { border-top:1px solid #edf0f3; }
+.items div { display:flex; justify-content:space-between; gap:12px; padding:8px 0; color:#424a56; font-size:13px; }
+.order-card footer { padding-top:14px; margin-top:6px; border-top:1px solid #edf0f3; color:#20242d; }
+.pagination { display:flex; justify-content:center; align-items:center; gap:18px; padding:24px; color:#687181; font-size:13px; }
+.empty-state,.loading-state { padding:38px; text-align:center; background:#fff; border:1px solid #e7e9ee; border-radius:7px; color:#687181; }
+@media(max-width:700px){.filters{align-items:stretch;flex-direction:column}.filters label{min-width:0}.order-card header,.order-card footer{align-items:flex-start;flex-direction:column}.pagination{gap:8px;padding:18px 0}}

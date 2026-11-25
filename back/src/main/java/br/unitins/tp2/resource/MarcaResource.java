@@ -21,6 +21,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("marcas")
+@jakarta.annotation.security.RolesAllowed("ADMIN")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class MarcaResource {
@@ -29,6 +30,7 @@ public class MarcaResource {
     MarcaService service;
 
     @GET
+    @jakarta.annotation.security.PermitAll
     public List<MarcaResponseDTO> findAll(
             @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("pageSize") @DefaultValue("100") int pageSize) {
@@ -36,6 +38,7 @@ public class MarcaResource {
     }
 
     @GET
+    @jakarta.annotation.security.PermitAll
     @Path("/nome/{nome}")
     public List<MarcaResponseDTO> findByNome(
             @PathParam("nome") String nome,
@@ -45,12 +48,14 @@ public class MarcaResource {
     }
 
     @GET
+    @jakarta.annotation.security.PermitAll
     @Path("/count")
     public long count() {
         return service.count();
     }
 
     @GET
+    @jakarta.annotation.security.PermitAll
     @Path("/{id}")
     public MarcaResponseDTO findById(@PathParam("id") long id) {
         return MarcaResponseDTO.valueOf(service.findById(id));

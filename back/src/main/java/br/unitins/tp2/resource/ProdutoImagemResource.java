@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 @Path("/produtos/{id}/imagem")
+@jakarta.annotation.security.RolesAllowed("ADMIN")
 public class ProdutoImagemResource {
     @Inject ProdutoImagemService service;
 
@@ -25,6 +26,7 @@ public class ProdutoImagemResource {
     }
 
     @GET
+    @jakarta.annotation.security.PermitAll
     @Produces({"image/png", "image/jpeg"})
     public Response visualizar(@PathParam("id") long id, @QueryParam("download") @DefaultValue("false") boolean download) {
         var arquivo = service.ler(id);

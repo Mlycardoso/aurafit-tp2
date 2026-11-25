@@ -1,37 +1,38 @@
 # Loja AuraFit
 
-A vitrine fica em /loja (tambem aberta pela raiz /). As rotas administrativas
-existentes, como /produtos e /usuarios, continuam separadas e sem autenticacao.
-Nao publique a API administrativa na internet antes de implementar autorizacao.
+A vitrine fica em `/loja` e também abre pela raiz. O acesso à API administrativa exige role `ADMIN`; checkout e histórico do cliente exigem role `CLIENTE`. A configuração local está em [KEYCLOAK.md](KEYCLOAK.md).
 
-## Disponivel
+## Disponível
 
-- Catalogo lido da API Quarkus, com preco, estoque e categoria.
-- Busca, filtros combinados, ordenacao e paginacao no navegador. O carregamento
-  percorre todas as paginas da API; para catalogos grandes, migrar esses filtros
-  para uma consulta publica paginada no servidor.
-- Carrinho e favoritos locais persistidos por ID, sem dados pessoais.
-- Consulta de endereco pela integracao de CEP existente.
-- Revisao de compra sem envio de pedido e sem cobranca.
+- Catálogo da API Quarkus com busca, filtros, ordenação e paginação no navegador.
+- Carrinho e favoritos por ID persistidos no navegador; esses dados permanecem locais ao sair da conta.
+- Login, cadastro e logout intermediados pela API; o navegador não acessa o Keycloak.
+- Endereço do cliente usado para criar o snapshot de entrega do pedido.
+- Checkout com entrega normal ou rápida, resumo e confirmação do pedido.
+- Tela “Meus pedidos” para clientes e “Produtos vendidos” para ADMIN, com paginação, filtros e atualização de status.
+- Imagens PNG/JPEG de produto armazenadas em S3 compatível; veja [TRABALHO-05-S3.md](TRABALHO-05-S3.md).
 
-## Dependencias pendentes
+## Regras de entrega e pagamento
 
-- Autenticacao, sessao e autorizacao; sincronizacao de favoritos por conta.
+- Normal: frete de R$ 14,90 e previsão de 7 dias úteis.
+- Rápida: frete de R$ 29,90 e previsão de 2 dias úteis.
+- O prazo exclui sábado e domingo e não considera feriados.
+- O status inicia como pendente; o administrador pode marcar o pedido como enviado.
+- Pagamento está fora do escopo. O sistema não coleta forma de pagamento e não simula cobrança.
 
-- Familia de produto e variacoes: as opcoes exibidas sao outros cadastros da mesma categoria,
-  nao SKUs com variacoes garantidas pelo backend.
-- Galeria com múltiplas fotos e informação nutricional por produto.
-- Pedidos, reserva de estoque, cotacao de entrega e provedor de pagamentos.
+O backend valida produto ativo e estoque e desconta a quantidade dentro da transação do pedido. Pedido e itens guardam snapshots do nome e preço do produto, além do nome e endereço do cliente, para preservar o histórico.
 
-As imagens whey-hero.png e whey-pouch.png foram geradas para esta composicao.
-Sao ilustrativas, nao fotografias das mercadorias. A logo existente foi preservada.
-Nao ha precos promocionais, avaliacoes, frete ou pagamentos ficticios.
+## Fora do escopo atual
 
-## Cadastro de produtos
+- Integração com gateway de pagamento, processamento de cobrança e cotação dinâmica de frete.
+- Sincronização de favoritos entre dispositivos.
+- Variantes por SKU, galeria de múltiplas fotos e dados nutricionais estruturados.
 
-- Upload, visualização, download e remoção de uma imagem PNG/JPEG por produto via Quarkus e S3. Configuração e limites em `TRABALHO-05-S3.md`.
+As imagens `whey-hero.png` e `whey-pouch.png` são ilustrativas, não fotografias dos produtos. A aplicação não mostra avaliações, promoções, frete ou pagamentos fictícios.
 
-- SKU único (gerado ao salvar se não informado), sabor e peso líquido em gramas.
-- Cadastros antigos podem ser complementados na edição; a loja prioriza os campos estruturados e mantém a leitura do nome como compatibilidade.
-- Inativação preserva o registro, estoque e vínculos. Reativação pela edição.
-- PATCH /produtos/{id}/inativar e o DELETE legado apenas inativam, sem exclusão física.
+## Catálogo administrativo
+
+- SKU único, sabor, peso líquido e estoque.
+- Inativação preserva produto, vínculos e imagem.
+- Upload, visualização, download e remoção de uma imagem PNG/JPEG por produto via API e S3.
+- O endpoint legado `DELETE /produtos/{id}` inativa o cadastro em vez de excluir fisicamente.

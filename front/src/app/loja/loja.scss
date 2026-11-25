@@ -132,6 +132,16 @@ select:focus {
   font-size: 12px;
   white-space: nowrap;
 }
+.header-actions button.account-action {
+  border: 1px solid #bc2457;
+  border-radius: 4px;
+  padding: 8px 12px;
+  color: #bc2457;
+  background: #fff;
+  cursor: pointer;
+}
+.header-actions .account-name { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.header-actions a:focus-visible, .header-actions button:focus-visible { outline: 3px solid #268567; outline-offset: 3px; }
 .header-actions b {
   background: var(--pink);
   color: #fff;
@@ -675,6 +685,20 @@ select:focus {
   max-width: 600px;
   padding-top: 30px;
 }
+.delivery-panel { display: grid; gap: 14px; max-width: 600px; padding-top: 30px; }
+.delivery-panel h2 { margin: 12px 0 0; font-size: 20px; }
+.delivery-panel > a { color: var(--pink); font-size: 13px; font-weight: 700; text-decoration: underline; }
+.address-card { margin: 0; padding: 16px; background: #f3f7f4; border: 1px solid #dce7df; border-radius: 5px; line-height: 1.6; }
+.delivery-options { display: grid; gap: 10px; }
+.delivery-options label { display: flex; align-items: center; gap: 12px; padding: 14px; border: 1px solid #d6dcd9; border-radius: 5px; cursor: pointer; }
+.delivery-options label.selected { border-color: var(--pink); background: #fff7f9; }
+.delivery-options input { accent-color: var(--pink); }
+.delivery-options span { display: grid; flex: 1; gap: 4px; }
+.delivery-options small { color: #67736a; }
+.payment-note { margin: 0; padding: 12px 14px; border-left: 3px solid #a8cdbb; background: #f3f7f4; color: #59685f; font-size: 12px; line-height: 1.6; }
+.order-confirm { max-width: 720px; margin: 30px auto; padding: 34px; border: 1px solid #dce7df; border-top: 4px solid #a8cdbb; background: #f7faf8; }
+.order-confirm h2 { margin: 12px 0; }
+.order-confirm p { color: #67736a; line-height: 1.6; }
 .checkout-form h2 {
   font-size: 20px;
   margin: 22px 0 6px;

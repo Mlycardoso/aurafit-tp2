@@ -9,6 +9,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/")
+@jakarta.annotation.security.PermitAll
 public class RootResource {
     @GET
     @Produces(MediaType.TEXT_PLAIN)

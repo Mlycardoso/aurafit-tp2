@@ -16,6 +16,9 @@
         <a routerLink="/admin/clientes" routerLinkActive="active" (click)="closeMenu()"
           ><img src="icons/tags.svg" alt="" />Clientes</a
         >
+        <a routerLink="/admin/pedidos" routerLinkActive="active" (click)="closeMenu()"
+          ><img src="icons/shopping-bag.svg" alt="" />Produtos vendidos</a
+        >
         <a routerLink="/admin/produtos" routerLinkActive="active" (click)="closeMenu()">
           <img src="icons/package-plus.svg" alt="" />
           Produtos
@@ -30,7 +33,7 @@
         </a>
       </nav>
 
-      <div class="sidebar-footer"><a routerLink="/loja" (click)="closeMenu()">Ver loja</a></div>
+      <div class="sidebar-footer"><a class="store-link" routerLink="/loja" (click)="closeMenu()"><img src="icons/arrow-up-right.svg" alt="" />Ver loja</a><span class="status-dot"></span></div>
     </aside>
 
     <button class="backdrop" aria-label="Fechar menu" (click)="closeMenu()"></button>
@@ -47,7 +50,11 @@
         </button>
         <div>
           <strong>Gestão da loja</strong>
-          <span>Área administrativa</span>
+          <span>{{auth.usuario()?.nome || 'Administrador'}}</span>
+        </div>
+        <div class="topbar-actions">
+          <a class="store-link" routerLink="/loja" aria-label="Ver loja"><img src="icons/arrow-up-right.svg" alt="" />Ver loja</a>
+          <button type="button" class="logout-button" (click)="sair()">Sair</button>
         </div>
       </header>
 
