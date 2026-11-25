@@ -93,4 +93,8 @@ export class LojaState {
     this.cart.update((rows) => rows.filter((row) => row.id !== id));
     this.persist('aurafit.cart.v1', this.cart());
   }
+  clearCart(): void {
+    this.cart.set([]);
+    this.persist('aurafit.cart.v1', []);
+  }
 }

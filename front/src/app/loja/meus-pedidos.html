@@ -1,0 +1,13 @@
+<main class="page"><a class="back" routerLink="/loja">← Voltar à loja</a><p class="eyebrow">SUA CONTA AURAFIT</p><h1>Meus pedidos</h1>
+  @if (loading()) { <p aria-live="polite">Carregando seus pedidos...</p> }
+  @else if (error()) { <p role="alert">{{error()}}</p> }
+  @else if (!pedidos().length) { <section class="order"><h2>Você ainda não tem pedidos.</h2><a routerLink="/loja">Explorar a loja</a></section> }
+  @else { <section class="orders">@for (pedido of pedidos(); track pedido.id) {
+    <article class="order"><div class="order-head"><div><h2>Pedido #{{pedido.id}}</h2><span class="muted">{{pedido.dataHora | date:'dd/MM/yyyy HH:mm'}}</span></div><span class="badge">{{pedido.status === 'PENDENTE' ? 'Pendente' : 'Enviado'}}</span></div>
+      <p>Entrega {{pedido.tipoEntrega === 'RAPIDA' ? 'rápida' : 'normal'}} até {{pedido.prazoEntrega | date:'dd/MM/yyyy'}} · frete {{pedido.frete | currency:'BRL'}}</p>
+      <div class="items">@for (item of pedido.itens; track $index) { <p>{{item.quantidade}} × {{item.nomeProduto}} — {{item.precoUnitario | currency:'BRL'}}</p> }</div>
+      <div class="total"><strong>Total</strong><strong>{{pedido.total | currency:'BRL'}}</strong></div>
+      <small>Pagamento fora da aplicação. Nenhuma cobrança foi processada.</small>
+    </article>
+  }</section> }
+</main>
