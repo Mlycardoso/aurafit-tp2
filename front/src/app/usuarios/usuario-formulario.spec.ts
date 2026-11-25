@@ -10,7 +10,7 @@ describe('UsuarioFormulario', () => {
   let service: {buscar: ReturnType<typeof vi.fn>; salvar: ReturnType<typeof vi.fn>};
   function configurar(id: string | null = null) {
     service = {
-      buscar: vi.fn().mockReturnValue(of({id: 1, nome: 'Ana Teste', email: 'ana@example.com', ativo: true, perfis: ['ATENDENTE']})),
+      buscar: vi.fn().mockReturnValue(of({id: 1, keycloakId: 'uuid', nome: 'Ana Teste', email: 'ana@example.com', ativo: true, perfis: ['CLIENTE']})),
       salvar: vi.fn().mockReturnValue(of({id: 1}))
     };
     TestBed.configureTestingModule({imports: [UsuarioFormulario], providers: [
@@ -23,7 +23,7 @@ describe('UsuarioFormulario', () => {
     fixture.detectChanges();
     return fixture;
   }
-  it('exige senha e perfil no cadastro', () => {
+  it('exige perfil no cadastro sem coletar senha administrativa', () => {
     const fixture = configurar();
     const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
     form.dispatchEvent(new Event('submit', {bubbles: true, cancelable: true}));
@@ -32,11 +32,12 @@ describe('UsuarioFormulario', () => {
     expect(fixture.nativeElement.textContent).toContain('Selecione pelo menos um perfil');
     fixture.destroy();
   });
-  it('mantem senha ausente ao editar apenas os dados', () => {
+  it('edita os dados sem enviar senha', () => {
     const fixture = configurar('1');
     const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
     form.dispatchEvent(new Event('submit', {bubbles: true, cancelable: true}));
-    expect(service.salvar).toHaveBeenCalledWith(1, expect.objectContaining({senha: null, perfis: ['ATENDENTE']}));
+    expect(service.salvar).toHaveBeenCalledWith(1, expect.objectContaining({perfis: ['CLIENTE']}));
+    expect(service.salvar.mock.calls[0][1]).not.toHaveProperty('senha');
     fixture.destroy();
   });
 });

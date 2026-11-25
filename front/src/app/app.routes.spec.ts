@@ -6,6 +6,8 @@ import { routes } from './app.routes';
 import { adminRoutes } from './admin/admin.routes';
 import { lojaRoutes } from './loja/loja.routes';
 import { AdminLayout } from './admin/admin-layout';
+import { AuthService } from './auth/auth.service';
+import { of } from 'rxjs';
 
 @Component({ template: '' })
 class RouteTarget {}
@@ -19,7 +21,18 @@ describe('Rotas administrativas', () => {
       : route.path === 'loja'
         ? { ...route, loadChildren: undefined, children: stubPages(lojaRoutes) }
         : route);
-    TestBed.configureTestingModule({ providers: [provideRouter(testRoutes)] });
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(testRoutes),
+        { provide: AuthService, useValue: {
+          isAuthenticated: () => true,
+          isAdmin: () => true,
+          roles: () => ['ADMIN'],
+          usuario: () => ({ nome: 'Admin' }),
+          logout: () => of(void 0),
+        } },
+      ],
+    });
   });
 
   it('separa o menu administrativo da loja', async () => {
