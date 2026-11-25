@@ -52,7 +52,7 @@ O volume `aurafit-storage_imagens` mantém arquivos após reiniciar o container.
 - Se a limpeza do arquivo antigo falhar, o upload retorna aviso e o servidor registra a chave pendente para remoção manual no console. Não há fila durável de limpeza automática.
 - Na remoção, o S3 é chamado primeiro. Se falhar, a referência é preservada para nova tentativa. Se o S3 remover e o banco falhar depois, a referência pode temporariamente apontar para arquivo ausente; repetir a remoção corrige isso.
 - PostgreSQL e S3 não compartilham transação distribuída. Queda abrupta entre etapas pode deixar objeto órfão ou referência sem objeto. Não se promete atomicidade distribuída; antes de remover um órfão manualmente, confirme que sua chave não está referenciada por nenhum produto.
-- A administração ainda não tem autenticação/autorização efetiva. O recurso segue esse limite existente; não publicar esta configuração como serviço de produção. O escopo é imagem de produto, não fotos de usuários ou galeria múltipla.
+- Os endpoints de upload e remoção agora exigem role `ADMIN`; leitura da imagem permanece pública para a vitrine. Configure Keycloak seguindo [KEYCLOAK.md](KEYCLOAK.md). RustFS e Keycloak locais continuam destinados ao desenvolvimento, não à exposição pública como produção. O escopo é imagem de produto, não fotos de usuários ou galeria múltipla.
 - As credenciais geradas são locais. Para nuvem, configure endpoint/região/bucket e credenciais próprias com permissões mínimas; não use o script local como provisionamento de produção. Este cliente foi configurado e testado para RustFS, não para todas as particularidades de regiões/provedores S3.
 
 ## Validar e demonstrar
