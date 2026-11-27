@@ -17,7 +17,7 @@ export interface AuthResponse {
   usuario: AuthUser | null;
 }
 
-const API = 'http://localhost:8080';
+export const API_BASE_URL = 'http://localhost:8080';
 const REFRESH_KEY = 'aurafit.refresh';
 
 @Injectable({ providedIn: 'root' })
@@ -32,26 +32,26 @@ export class AuthService {
   private refreshToken: string | null = null;
 
   login(email: string, senha: string): Observable<AuthUser> {
-    return this.http.post<AuthResponse>(`${API}/auth/login`, { email, senha }).pipe(
+    return this.http.post<AuthResponse>(`${API_BASE_URL}/auth/login`, { email, senha }).pipe(
       tap((response) => this.save(response)),
       switchMap((response) => response.usuario ? of(response.usuario) : this.carregarUsuario()),
     );
   }
 
   registrar(payload: unknown): Observable<AuthUser> {
-    return this.http.post<AuthResponse>(`${API}/auth/registro`, payload).pipe(
+    return this.http.post<AuthResponse>(`${API_BASE_URL}/auth/registro`, payload).pipe(
       tap((response) => this.save(response)),
       switchMap((response) => response.usuario ? of(response.usuario) : this.carregarUsuario()),
     );
   }
 
   carregarUsuario(): Observable<AuthUser> {
-    return this.http.get<AuthUser>(`${API}/auth/me`).pipe(tap((user) => this.usuario.set(user)));
+    return this.http.get<AuthUser>(`${API_BASE_URL}/auth/me`).pipe(tap((user) => this.usuario.set(user)));
   }
 
   refresh(): Observable<string> {
     if (!this.refreshToken) return throwError(() => new Error('Sessão expirada'));
-    return this.http.post<AuthResponse>(`${API}/auth/refresh`, { refreshToken: this.refreshToken }).pipe(
+    return this.http.post<AuthResponse>(`${API_BASE_URL}/auth/refresh`, { refreshToken: this.refreshToken }).pipe(
       tap((response) => this.save(response)),
       switchMap((response) => response.usuario ? of(response.usuario) : this.carregarUsuario()),
       map(() => this.accessToken()!),
@@ -67,7 +67,7 @@ export class AuthService {
   logout(): Observable<void> {
     const token = this.refreshToken;
     if (!token) { this.clear(); return of(void 0); }
-    return this.http.post<void>(`${API}/auth/logout`, { refreshToken: token }).pipe(
+    return this.http.post<void>(`${API_BASE_URL}/auth/logout`, { refreshToken: token }).pipe(
       catchError(() => of(void 0)),
       tap(() => this.clear()),
     );
