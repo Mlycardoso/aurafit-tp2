@@ -6,20 +6,23 @@ O fluxo é **Angular → API Quarkus → Keycloak**. O navegador só conversa co
 
 Pré-requisitos: Docker Desktop, PostgreSQL local acessível em `localhost:5432` com banco `topicos2db` e usuário `topicos2`, JDK 25, Node.js compatível com Angular 22 e npm.
 
-1. Inicie o PostgreSQL usado pelo projeto.
+1. Inicie o Docker Desktop e o PostgreSQL usado pelo projeto.
 2. Na raiz, rode `./iniciar-storage.ps1` no PowerShell.
 3. Rode `./iniciar-keycloak.ps1`. O script completa `back/.env` com valores aleatórios para o administrador master do Keycloak. O arquivo é ignorado pelo Git.
-4. No primeiro início, o Keycloak importa `keycloak/aurafit-realm.json` automaticamente e abre em `http://127.0.0.1:8081`.
-5. Entre na console master com `KEYCLOAK_BOOTSTRAP_USER` e `KEYCLOAK_BOOTSTRAP_PASSWORD` de `back/.env`. No realm `aurafit`, abra **Clients → aurafit-api → Credentials**, copie o secret gerado e grave `KEYCLOAK_API_CLIENT_SECRET=<valor>` em `back/.env`. Repita em **Clients → aurafit-admin → Credentials** e grave `KEYCLOAK_ADMIN_CLIENT_SECRET=<valor>`. Não adicione esses valores ao Git ou ao front-end.
-6. No realm `aurafit`, abra **Users → admin@aurafit.local → Credentials**, defina uma senha temporária e marque a troca obrigatória no próximo login. O usuário importado já tem role `ADMIN`. No primeiro login pela loja, o backend cria o registro local com o `keycloakId`.
-7. Em `back/`, execute `./mvnw.cmd quarkus:dev`.
-8. Em `front/`, execute `npm start -- --host 127.0.0.1` e acesse `http://127.0.0.1:4200`.
+4. Aguarde o Keycloak abrir em `http://127.0.0.1:8081`; no primeiro início ele importa `keycloak/aurafit-realm.json`.
+5. Rode `./configurar-keycloak.ps1`. O script lê as credenciais master de `back/.env`, obtém os secrets dos clients `aurafit-api` e `aurafit-admin` pela Admin REST API e grava esses valores no `.env`. Também define uma senha aleatória não temporária para `admin@aurafit.local`, grava-a em `AURAFIT_ADMIN_PASSWORD` e a exibe uma única vez no terminal. Guarde essa senha.
+6. Em `back/`, execute `./mvnw.cmd quarkus:dev`.
+7. Em `front/`, execute `npm start -- --host 127.0.0.1` e acesse `http://127.0.0.1:4200`.
+
+Como alternativa, os secrets podem ser copiados da console master em **Clients → aurafit-api/aurafit-admin → Credentials**. Defina a senha do admin em **Users → admin@aurafit.local → Credentials → Set password**. Deixe **Temporary** desligado. A ação **Update Password** não pode ficar ativa: o login do admin é intermediado pelo backend usando password grant, que não conclui logins com ações obrigatórias pendentes. A senha não é versionada.
+
+O realm só é importado automaticamente na primeira subida, quando ainda não há realm persistido. Quem já possui o volume `keycloak_data` precisa remover manualmente a ação em **Users → admin@aurafit.local → Details → Required user actions**, ou recriar o volume (o que apaga os dados locais do Keycloak).
 
 O Keycloak usa o modo `start-dev` com H2 no volume nomeado `keycloak_data`; não requer outro PostgreSQL e mantém o realm após reiniciar. As portas estão limitadas a `127.0.0.1`. Para desligar sem apagar os dados, rode `docker compose --env-file back/.env -f compose.keycloak.yaml down`. Evite `down -v`: isso apaga o realm e os usuários locais do Keycloak. O import só aplica automaticamente em um realm ainda inexistente.
 
 ## Variáveis do backend
 
-O script define os identificadores padrão no `.env`; os secrets dos dois clients são gerados pelo Keycloak e copiados manualmente após o import.
+Os scripts definem identificadores e credenciais locais no `.env`; `configurar-keycloak.ps1` busca os secrets dos clients após o import.
 
 | Variável | Valor padrão / origem |
 | --- | --- |
@@ -30,6 +33,7 @@ O script define os identificadores padrão no `.env`; os secrets dos dois client
 | `KEYCLOAK_API_CLIENT_SECRET` | Secret exibido na console do client `aurafit-api` |
 | `KEYCLOAK_ADMIN_CLIENT_ID` | `aurafit-admin` |
 | `KEYCLOAK_ADMIN_CLIENT_SECRET` | Secret exibido na console do client `aurafit-admin` |
+| `DB_USERNAME` / `DB_PASSWORD` / `DB_URL` | Usuário, senha e URL do PostgreSQL; padrões locais em `application.properties` |
 
 Quarkus roda como OIDC service, valida bearer JWT e lê roles em `realm_access/roles`. O OIDC dev service permanece desativado porque o Docker é iniciado pelos scripts do repositório. O client `aurafit-api` é confidential e tem Direct Access Grants habilitado. O client `aurafit-admin` usa service account, sem fluxo de login de usuário. A service account recebe apenas `manage-users`, `view-users`, `query-users` e `view-realm` de `realm-management`. Não existe client público para o Angular.
 
@@ -40,7 +44,7 @@ Quarkus roda como OIDC service, valida bearer JWT e lê roles em `realm_access/r
 - O interceptor acrescenta o bearer token às chamadas da API, tenta refresh uma vez após 401 e redireciona para login se a renovação falhar. 403 abre a tela de acesso negado.
 - Logout revoga a sessão no Keycloak com o refresh token e remove o token e o usuário do estado local. Carrinho e favoritos continuam no navegador porque são seleções locais sem dados da conta.
 - As roles `ADMIN` e `CLIENTE` têm o Keycloak como fonte de verdade. `Usuario.perfis` é uma projeção local para a tabela administrativa, sincronizada pelo CRUD e no login do usuário; alterações feitas diretamente na console são refletidas no registro local no próximo login.
-- O realm de desenvolvimento importa `admin@aurafit.local` sem senha versionada. A senha é definida pela console com o administrador master local.
+- O realm de desenvolvimento importa `admin@aurafit.local` sem senha versionada nem ação obrigatória de troca. Use `configurar-keycloak.ps1` ou defina a senha pela console como não temporária; mantenha **Update Password** desativada para permitir o password grant do backend.
 
 ## Rotas e permissões
 
