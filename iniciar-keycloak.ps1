@@ -8,7 +8,11 @@ if (!($existing -match '^KEYCLOAK_BOOTSTRAP_USER=')) {
     Add-Content -LiteralPath $configPath -Encoding ascii -Value "KEYCLOAK_BOOTSTRAP_USER=aurafit-admin"
 }
 if (!($existing -match '^KEYCLOAK_BOOTSTRAP_PASSWORD=')) {
-    $password = [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+        $bytes = New-Object byte[] 32
+    $rng = [Security.Cryptography.RandomNumberGenerator]::Create()
+    $rng.GetBytes($bytes)
+    $rng.Dispose()
+    $password = [Convert]::ToBase64String($bytes)
     Add-Content -LiteralPath $configPath -Encoding ascii -Value "KEYCLOAK_BOOTSTRAP_PASSWORD=$password"
 }
 $defaults = @(

@@ -2,7 +2,7 @@ import { HttpContextToken, HttpErrorResponse, HttpInterceptorFn, HttpRequest } f
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, switchMap, throwError } from 'rxjs';
-import { AuthService } from './auth.service';
+import { API_BASE_URL, AuthService } from './auth.service';
 
 function isAuthRequest(request: HttpRequest<unknown>): boolean {
   return /\/auth\/(login|registro|refresh)$/.test(request.url);
@@ -13,7 +13,7 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const auth = inject(AuthService);
   const router = inject(Router);
   const token = auth.accessToken();
-  const apiRequest = request.url.startsWith('http://localhost:8080/');
+  const apiRequest = request.url.startsWith(`${API_BASE_URL}/`);
   const outgoing = token && apiRequest
     ? request.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
     : request;

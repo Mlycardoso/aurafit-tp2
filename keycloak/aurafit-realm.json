@@ -44,7 +44,7 @@
       "lastName": "AuraFit",
       "enabled": true,
       "emailVerified": true,
-      "requiredActions": ["UPDATE_PASSWORD"],
+      "requiredActions": [],
       "realmRoles": ["ADMIN"]
     },
     {

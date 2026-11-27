@@ -19,6 +19,7 @@ class KeycloakClientFake implements KeycloakClient {
     private final Map<String, List<String>> roles = new ConcurrentHashMap<>();
 
     @Override public Token login(String email, String password) {
+        if ("invalid-client".equals(password)) throw new KeycloakException(503, "Serviço de autenticação temporariamente indisponível.");
         if (password == null || password.isBlank() || "wrong".equals(password)) throw new KeycloakException(401, "Credenciais inválidas.");
         UserAccount account = findUserByEmail(email);
         if (account == null) {
