@@ -30,6 +30,11 @@ class AuthResourceTest {
                 .post("/auth/refresh").then().statusCode(200).body("accessToken", is("test-access-token-renovado"));
     }
 
+    @Test void falhaDeConfiguracaoDoClientNaoPareceCredencialDoUsuario() {
+        given().contentType("application/json").body(Map.of("email", "teste@example.com", "senha", "invalid-client"))
+                .post("/auth/login").then().statusCode(503).body(not(containsString("invalid_client")));
+    }
+
     @Test void registroCriaContaLocalEPerfilCliente() {
         String email = UUID.randomUUID() + "@example.com";
         given().contentType("application/json").body(registration(email)).post("/auth/registro")

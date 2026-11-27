@@ -20,9 +20,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.jboss.logging.Logger;
 
 @ApplicationScoped
 public class KeycloakClientImpl implements KeycloakClient {
+    private static final Logger LOG = Logger.getLogger(KeycloakClientImpl.class);
     @ConfigProperty(name = "keycloak.server-url") String serverUrl;
     @ConfigProperty(name = "keycloak.realm", defaultValue = "aurafit") String realm;
     @ConfigProperty(name = "keycloak.api-client-id", defaultValue = "aurafit-api") String apiClientId;
@@ -132,8 +134,18 @@ public class KeycloakClientImpl implements KeycloakClient {
 
     private Token token(Map<String, String> parameters, boolean userGrant) {
         HttpResponse<String> response = send("POST", realmUrl() + "/protocol/openid-connect/token", null,
-                form(parameters), "application/x-www-form-urlencoded", 200, userGrant ? 400 : -1);
-        if (response.statusCode() != 200) throw new KeycloakException(401, "Credenciais inválidas.");
+                form(parameters), "application/x-www-form-urlencoded", 200, 400, 401, 403);
+        if (response.statusCode() != 200) {
+            JsonNode error = json(response.body());
+            String code = error.path("error").asText("unknown_error");
+            String description = error.path("error_description").asText("sem descrição");
+            if ("invalid_client".equals(code)) {
+                LOG.warnf("Configuração do client Keycloak no back-end incorreta (%s): %s", userGrant ? "API" : "administração", description);
+                throw new KeycloakException(503, "Serviço de autenticação temporariamente indisponível.");
+            }
+            LOG.warnf("Keycloak recusou solicitação de token: %s: %s", code, description);
+            throw new KeycloakException(401, "Credenciais inválidas.");
+        }
         JsonNode json = json(response.body());
         return new Token(json.path("access_token").asText(), json.path("refresh_token").asText(), json.path("expires_in").asLong());
     }
@@ -141,7 +153,18 @@ public class KeycloakClientImpl implements KeycloakClient {
     private String adminToken() {
         HttpResponse<String> response = send("POST", realmUrl() + "/protocol/openid-connect/token", null,
                 form(Map.of("grant_type", "client_credentials", "client_id", adminClientId, "client_secret", adminSecret)),
-                "application/x-www-form-urlencoded", 200);
+                "application/x-www-form-urlencoded", 200, 400, 401, 403);
+        if (response.statusCode() != 200) {
+            JsonNode error = json(response.body());
+            String code = error.path("error").asText("unknown_error");
+            String description = error.path("error_description").asText("sem descrição");
+            if ("invalid_client".equals(code)) {
+                LOG.warnf("Configuração do client Keycloak no back-end incorreta (administração): %s", description);
+                throw new KeycloakException(503, "Serviço de autenticação temporariamente indisponível.");
+            }
+            LOG.warnf("Keycloak recusou solicitação de token administrativo: %s: %s", code, description);
+            throw new KeycloakException(502, "Falha na comunicação com o provedor de identidade.");
+        }
         return json(response.body()).path("access_token").asText();
     }
 
