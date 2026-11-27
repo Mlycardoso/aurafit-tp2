@@ -78,10 +78,10 @@ Front-end e back-end são aplicações independentes, mantidas no mesmo reposit�
 
 Subida local no Windows/PowerShell, nesta ordem:
 
-1. PostgreSQL local: banco `topicos2db`, usuário `topicos2`.
+1. Inicie o Docker Desktop e o PostgreSQL local (banco `topicos2db`, usuário `topicos2`).
 2. Na raiz, `./iniciar-storage.ps1`.
-3. Na raiz, `./iniciar-keycloak.ps1`; configure os secrets dos clients em `back/.env` seguindo [KEYCLOAK.md](KEYCLOAK.md).
-4. Em `back/`, `./mvnw.cmd quarkus:dev`.
+3. Na raiz, `./iniciar-keycloak.ps1` e depois `./configurar-keycloak.ps1`; a segunda etapa grava a configuração necessária em `back/.env` e exibe a senha do admin uma vez. Veja [KEYCLOAK.md](KEYCLOAK.md).
+4. Em `back/`, `./mvnw.cmd quarkus:dev`. `DB_USERNAME`, `DB_PASSWORD` e `DB_URL` podem ser definidos no ambiente; os padrões são para desenvolvimento local.
 5. Em `front/`, `npm start -- --host 127.0.0.1`.
 
 Para configurar storage e seus limites de upload, veja [TRABALHO-05-S3.md](TRABALHO-05-S3.md).
